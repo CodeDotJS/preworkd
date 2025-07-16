@@ -17,9 +17,9 @@ const inconsolata = Inconsolata({
 export const metadata: Metadata = {
   title: "preworkd",
   description: "Fixing your data mistakes—gently mocking them along the way.",
-    icons: {
-      icon: '/goat.svg',
-    }
+  icons: {
+    icon: '/goat.svg',
+  }
 }
 
 export default function RootLayout({
@@ -29,7 +29,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${inconsolata.variable} font-inter antialiased`}>{children}</body>
+      <body className={`${inter.variable} ${inconsolata.variable} font-inter antialiased`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   )
 }
