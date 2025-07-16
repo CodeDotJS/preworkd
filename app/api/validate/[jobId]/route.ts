@@ -6,7 +6,7 @@ export async function GET(request: NextRequest, { params }: { params: { jobId: s
     const { searchParams } = new URL(request.url)
     
     // Get API endpoint from query parameter or use default
-    const apiEndpoint = searchParams.get('endpoint') || 'https://yaysay-validator-1.onrender.com/validate/'
+    const apiEndpoint = searchParams.get('endpoint') || 'https://yaysay-validator.onrender.com/validate/'
 
     // Validate job ID format (UUID)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i

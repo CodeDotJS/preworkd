@@ -13,7 +13,7 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  const defaultEndpoint = "https://yaysay-validator-1.onrender.com/validate/"
+  const defaultEndpoint = "https://yaysay-validator.onrender.com/validate/"
   const defaultReworkdUrl = "https://app.reworkd.ai/groups/949a6e3b-e9e9-4293-b42f-4b19a4f130a0/root/"
 
   useEffect(() => {
