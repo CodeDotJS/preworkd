@@ -17,14 +17,27 @@ import {
   Search,
   Copy,
   Check,
-  Activity,
   ChevronRight,
+  RefreshCw,
 } from "lucide-react"
+import Navigation from "@/components/Navigation"
 
 interface ValidationExample {
   url?: string
   __url?: string
   product_id: string
+  job_id?: number
+}
+
+interface SizeValue {
+  size: string
+  sample_url: string
+  job_id: number
+}
+
+interface UniqueSizesCategory {
+  total: number
+  values: SizeValue[]
 }
 
 interface ValidationCategory {
@@ -44,11 +57,24 @@ interface ValidationResult {
   has_num_ratings_no_rating: ValidationCategory
   has_ratings_no_num_rating: ValidationCategory
   missing_price: ValidationCategory
+  unique_sizes?: UniqueSizesCategory
 }
 
 interface ApiResponse {
   status: string
   result: ValidationResult
+}
+
+interface CachedJob {
+  id: string
+  data: ApiResponse
+  timestamp: string
+  domain: string
+}
+
+interface JobEntry {
+  id: string
+  site: string
 }
 
 const categoryLabels: Record<keyof ValidationResult, { title: string; icon: string }> = {
@@ -63,6 +89,63 @@ const categoryLabels: Record<keyof ValidationResult, { title: string; icon: stri
   has_num_ratings_no_rating: { title: "Rating Count Without Rating", icon: "⭐" },
   has_ratings_no_num_rating: { title: "Rating Without Count", icon: "📊" },
   missing_price: { title: "Missing Prices", icon: "💰" },
+  unique_sizes: { title: "Unique Sizes", icon: "📏" },
+}
+
+// Cache management functions
+const CACHE_KEY = 'validationCache'
+const MAX_CACHE_SIZE = 5
+
+const getCachedJobs = (): CachedJob[] => {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+const setCachedJobs = (jobs: CachedJob[]) => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(jobs))
+  } catch (error) {
+    console.error('Failed to save cache:', error)
+  }
+}
+
+const addToCache = (jobId: string, data: ApiResponse, domain: string) => {
+  const cachedJobs = getCachedJobs()
+  const newJob: CachedJob = {
+    id: jobId,
+    data,
+    timestamp: new Date().toISOString(),
+    domain
+  }
+  
+  // Remove existing entry if it exists
+  const filteredJobs = cachedJobs.filter(job => job.id !== jobId)
+  
+  // Add new job to the beginning and limit to MAX_CACHE_SIZE
+  const updatedJobs = [newJob, ...filteredJobs].slice(0, MAX_CACHE_SIZE)
+  
+  setCachedJobs(updatedJobs)
+}
+
+const getFromCache = (jobId: string): CachedJob | null => {
+  const cachedJobs = getCachedJobs()
+  return cachedJobs.find(job => job.id === jobId) || null
+}
+
+const clearCache = () => {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(CACHE_KEY)
+}
+
+const removeFromCache = (jobId: string) => {
+  const cachedJobs = getCachedJobs()
+  const updatedJobs = cachedJobs.filter(job => job.id !== jobId)
+  setCachedJobs(updatedJobs)
 }
 
 export default function ValidationDashboard() {
@@ -73,9 +156,31 @@ export default function ValidationDashboard() {
   const [currentJobId, setCurrentJobId] = useState<string>("")
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set())
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [isFromCache, setIsFromCache] = useState(false)
+  const [cacheTimestamp, setCacheTimestamp] = useState<string>('')
+  const [jobEntries, setJobEntries] = useState<JobEntry[]>([])
+  const [searchResults, setSearchResults] = useState<JobEntry[]>([])
+  const [showSearchResults, setShowSearchResults] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
 
   const router = useRouter()
   const searchParams = useSearchParams()
+
+
+
+  // Load job entries on component mount
+  useEffect(() => {
+    const loadJobEntries = async () => {
+      try {
+        const response = await fetch('/reworkd_ids.json')
+        const data: JobEntry[] = await response.json()
+        setJobEntries(data)
+      } catch (error) {
+        console.error('Failed to load job entries:', error)
+      }
+    }
+    loadJobEntries()
+  }, [])
 
   // Auto-validate when jobId is in URL
   useEffect(() => {
@@ -86,13 +191,30 @@ export default function ValidationDashboard() {
     }
   }, [searchParams])
 
-  const validateJob = async (inputValue: string) => {
+  // Handle clicking outside search results
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (!target.closest('.search-container')) {
+        setShowSearchResults(false)
+      }
+    }
+
+    if (showSearchResults) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showSearchResults])
+
+  const validateJob = async (inputValue: string, forceRefresh: boolean = false) => {
     if (!inputValue.trim()) return
 
     setLoading(true)
     setError(null)
     setResult(null)
     setSelectedCategory(null)
+    setIsFromCache(false)
+    setCacheTimestamp('')
 
     try {
       const jobId = extractJobId(inputValue)
@@ -103,6 +225,18 @@ export default function ValidationDashboard() {
         const newUrl = new URL(window.location.href)
         newUrl.searchParams.set("id", jobId)
         router.push(newUrl.pathname + newUrl.search, { scroll: false })
+      }
+      
+      // Check cache first (only if not forcing refresh)
+      if (!forceRefresh) {
+        const cachedJob = getFromCache(jobId)
+        if (cachedJob) {
+          setResult(cachedJob.data)
+          setIsFromCache(true)
+          setCacheTimestamp(cachedJob.timestamp)
+          setLoading(false)
+          return
+        }
       }
       
       // Get API endpoint from localStorage or use default
@@ -120,13 +254,17 @@ export default function ValidationDashboard() {
       const data: ApiResponse = await response.json()
       setResult(data)
       
+      // Add to cache
+      const domain = data.result ? getRepresentativeDomain(data.result) : 'UNKNOWN'
+      addToCache(jobId, data, domain)
+      
       // Store JobID in localStorage for browse page
       if (typeof window !== 'undefined') {
         const storedJobIds = JSON.parse(localStorage.getItem('validatedJobIds') || '[]')
         const jobEntry = {
           id: jobId,
           timestamp: new Date().toISOString(),
-          domain: data.result ? getRepresentativeDomain(data.result) : 'UNKNOWN'
+          domain: domain
         }
         const updatedJobIds = [jobEntry, ...storedJobIds.filter((item: any) => item.id !== jobId)].slice(0, 20) // Keep last 20
         localStorage.setItem('validatedJobIds', JSON.stringify(updatedJobIds))
@@ -135,6 +273,12 @@ export default function ValidationDashboard() {
       setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const refreshJob = async () => {
+    if (currentJobId) {
+      await validateJob(currentJobId, true)
     }
   }
 
@@ -173,6 +317,47 @@ export default function ValidationDashboard() {
     }, 1500)
   }
 
+  const extractDomainForSearch = (url: string): string => {
+    try {
+      const urlObj = new URL(url)
+      return urlObj.hostname.replace('www.', '')
+    } catch {
+      return url
+    }
+  }
+
+  const handleInputChange = (value: string) => {
+    setInput(value)
+    setShowSearchResults(false)
+    
+    if (value.startsWith('@')) {
+      const searchTerm = value.slice(1).toLowerCase()
+      if (searchTerm.length > 0) {
+        const results = jobEntries.filter(entry => 
+          extractDomainForSearch(entry.site).toLowerCase().includes(searchTerm)
+        ).slice(0, 10) // Limit to 10 results
+        setSearchResults(results)
+        setShowSearchResults(true)
+      } else {
+        setSearchResults([])
+        setShowSearchResults(false)
+      }
+    } else {
+      setSearchResults([])
+      setShowSearchResults(false)
+    }
+  }
+
+  const handleSearchResultClick = (jobEntry: JobEntry) => {
+    setInput(jobEntry.id)
+    setShowSearchResults(false)
+    validateJob(jobEntry.id)
+  }
+
+  const handleClickOutside = () => {
+    setShowSearchResults(false)
+  }
+
   const getTotalIssues = (result: ValidationResult): number => {
     return Object.values(result).reduce((sum, category) => sum + category.total, 0)
   }
@@ -196,12 +381,26 @@ export default function ValidationDashboard() {
 
   // Helper function to get representative domain from validation results
   const getRepresentativeDomain = (result: ValidationResult): string => {
-    for (const category of Object.values(result)) {
-      if (category.examples && category.examples.length > 0) {
-        for (const example of category.examples) {
-          const url = getExampleUrl(example)
-          if (url) {
-            return extractDomain(url)
+    for (const [key, category] of Object.entries(result)) {
+      if (key === 'unique_sizes') {
+        // Handle unique_sizes category
+        const uniqueSizesCategory = category as UniqueSizesCategory
+        if (uniqueSizesCategory.values && uniqueSizesCategory.values.length > 0) {
+          for (const value of uniqueSizesCategory.values) {
+            if (value.sample_url) {
+              return extractDomain(value.sample_url)
+            }
+          }
+        }
+      } else {
+        // Handle regular validation categories
+        const validationCategory = category as ValidationCategory
+        if (validationCategory.examples && validationCategory.examples.length > 0) {
+          for (const example of validationCategory.examples) {
+            const url = getExampleUrl(example)
+            if (url) {
+              return extractDomain(url)
+            }
           }
         }
       }
@@ -210,8 +409,78 @@ export default function ValidationDashboard() {
   }
 
   const handleCategoryClick = (categoryKey: string) => {
-    if (result?.result[categoryKey as keyof ValidationResult]?.total > 0) {
+    if (result?.result?.[categoryKey as keyof ValidationResult]?.total > 0) {
       setSelectedCategory(categoryKey)
+    }
+  }
+
+  const formatRelativeTime = (timestamp: string): string => {
+    const now = new Date()
+    const cachedTime = new Date(timestamp)
+    const diffInSeconds = Math.floor((now.getTime() - cachedTime.getTime()) / 1000)
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} second${diffInSeconds !== 1 ? 's' : ''} ago`
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60)
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60)
+    if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24)
+    if (diffInDays < 7) {
+      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`
+    }
+
+    const diffInWeeks = Math.floor(diffInDays / 7)
+    if (diffInWeeks < 4) {
+      return `${diffInWeeks} week${diffInWeeks !== 1 ? 's' : ''} ago`
+    }
+
+    const diffInMonths = Math.floor(diffInDays / 30)
+    if (diffInMonths < 12) {
+      return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`
+    }
+
+    const diffInYears = Math.floor(diffInDays / 365)
+    return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`
+  }
+
+  // Helper function to get category data for display
+  const getCategoryData = (categoryKey: string) => {
+    const category = result?.result?.[categoryKey as keyof ValidationResult]
+    if (!category) return null
+
+    if (categoryKey === 'unique_sizes') {
+      const uniqueSizesCategory = category as UniqueSizesCategory
+      return {
+        total: uniqueSizesCategory.total,
+        items: uniqueSizesCategory.values.map((value, index) => ({
+          id: `size-${index}`,
+          type: 'size' as const,
+          size: value.size,
+          url: value.sample_url,
+          jobId: value.job_id
+        }))
+      }
+    } else {
+      const validationCategory = category as ValidationCategory
+      return {
+        total: validationCategory.total,
+        items: validationCategory.examples.map((example, index) => ({
+          id: `example-${index}`,
+          type: 'example' as const,
+          productId: example.product_id,
+          url: getExampleUrl(example),
+          jobId: example.job_id
+        }))
+      }
     }
   }
 
@@ -219,48 +488,50 @@ export default function ValidationDashboard() {
     <div className="min-h-screen bg-white font-inter">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <a href="/" className="flex items-center gap-2 no-underline">
-            <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md shadow-violet-500/25">
-              <Activity className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                preworkd
-              </h1>
-              <p className="text-gray-600 text-sm font-medium">
-                Fixing your data mistakes—gently mocking them along the way.
-              </p>
-            </div>
-          </a>
-          
-          <nav className="flex items-center gap-6">
-            <a href="/" className="text-violet-600 font-semibold border-b-2 border-violet-600 pb-1">
-              Validate
-            </a>
-            <a href="/browse" className="text-gray-600 hover:text-violet-600 font-medium transition-colors">
-              Browse
-            </a>
-            <a href="/settings" className="text-gray-600 hover:text-violet-600 font-medium transition-colors">
-              Settings
-            </a>
-          </nav>
-        </div>
+        <Navigation currentPage="validate" />
 
         {/* Input Section */}
         <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <div className="relative flex-1 search-container">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                 <Input
                   type="text"
-                  placeholder="Enter job ID or paste URL..."
+                  placeholder="Enter job ID, paste URL, or type @ to search domains..."
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={(e) => handleInputChange(e.target.value)}
                   className="pl-10 h-10 text-sm bg-gray-50 border-gray-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg font-medium"
                   disabled={loading}
                 />
+                
+                {/* Search Results Dropdown */}
+                {showSearchResults && searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                    {searchResults.map((entry, index) => (
+                      <button
+                        key={entry.id}
+                        type="button"
+                        onClick={() => handleSearchResultClick(entry)}
+                        className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {extractDomainForSearch(entry.site)}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              {entry.site}
+                            </p>
+                          </div>
+                          <div className="text-xs text-gray-400 font-mono">
+                            {entry.id.slice(0, 8)}...
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <Button
                 type="submit"
@@ -276,6 +547,26 @@ export default function ValidationDashboard() {
                   "Validate"
                 )}
               </Button>
+              {isFromCache && result && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={refreshJob}
+                  disabled={loading}
+                  className="h-10 px-3 border-amber-200 text-amber-700 hover:bg-amber-50 transition-colors"
+                  title="Refresh cached data"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-1" />
+                      Refresh
+                    </>
+                  )}
+                </Button>
+              )}
               {input.trim() && (
                 <Button
                   type="button"
@@ -328,12 +619,54 @@ export default function ValidationDashboard() {
           </form>
         </div>
 
-        {/* Error Display */}
+        {/* Error Display - Fun Bruh Moment */}
         {error && (
-          <Alert className="mb-6 bg-red-50 border-red-200 rounded-2xl">
-            <AlertTriangle className="w-5 h-5 text-red-600" />
-            <AlertDescription className="text-red-800 font-medium">{error}</AlertDescription>
-          </Alert>
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm text-center mb-6">
+            <div className="max-w-md mx-auto">
+              <img 
+                src="/bruh.png" 
+                alt="Bruh moment" 
+                className="w-48 h-48 mx-auto mb-6 rounded-xl"
+              />
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Bruh... Really?
+              </h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                {error}
+              </p>
+              <p className="text-gray-500 text-xs italic">
+                "I've seen better error handling in a toaster." - Validation Goat
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Loading Section - Show during validation */}
+        {loading && (
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm text-center">
+            <div className="max-w-md mx-auto">
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                className="w-64 h-64 mx-auto mb-6 rounded-xl"
+              >
+                <source src="/r8x.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                Analyzing Your Data...
+              </h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Our validation engine is hard at work finding those sneaky data issues. 
+                This might take a moment.
+              </p>
+              <div className="flex items-center justify-center mt-4">
+                <Loader2 className="w-5 h-5 animate-spin text-violet-600 mr-2" />
+                <span className="text-violet-600 font-medium">Processing...</span>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Welcome Section - Show when no results */}
@@ -413,6 +746,24 @@ export default function ValidationDashboard() {
                     </div>
                   </div>
                 </div>
+
+                {/* Cache Information */}
+                {isFromCache && (
+                  <div className="bg-white border border-amber-200 rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md shadow-amber-500/25">
+                        <RefreshCw className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Cache Status</p>
+                        <p className="text-sm font-medium text-amber-800">
+                          {formatRelativeTime(cacheTimestamp)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
               </div>
 
               {/* Categories */}
@@ -421,8 +772,8 @@ export default function ValidationDashboard() {
                   <h3 className="text-lg font-bold text-gray-900">Issue Categories</h3>
                 </div>
                 <div className="divide-y divide-gray-100">
-                  {Object.entries(result.result)
-                    .filter(([, category]) => category.total > 0)
+                  {Object.entries(result?.result || {})
+                    .filter(([, category]) => category?.total > 0)
                     .map(([key, category]) => {
                       const categoryInfo = categoryLabels[key as keyof ValidationResult]
                       if (!categoryInfo) return null
@@ -456,11 +807,13 @@ export default function ValidationDashboard() {
                     })}
                 </div>
               </div>
+
+
             </div>
 
             {/* Right Pane - Details */}
             <div className="lg:col-span-3 lg:sticky lg:top-8 lg:h-fit">
-              {selectedCategory && result.result[selectedCategory as keyof ValidationResult] ? (
+              {selectedCategory && result?.result?.[selectedCategory as keyof ValidationResult] ? (
                 <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                   <div className="p-6 border-b border-gray-200">
                     <div className="flex items-center gap-4">
@@ -474,7 +827,7 @@ export default function ValidationDashboard() {
                           {categoryLabels[selectedCategory as keyof ValidationResult]?.title}
                         </h3>
                         <p className="text-red-600 font-semibold mt-1">
-                          {result.result[selectedCategory as keyof ValidationResult].total} issues found
+                          {result?.result?.[selectedCategory as keyof ValidationResult]?.total} issues found
                         </p>
                       </div>
                     </div>
@@ -484,85 +837,103 @@ export default function ValidationDashboard() {
                     <Table>
                       <TableHeader className="sticky top-0 bg-white z-10">
                         <TableRow className="bg-gray-50 hover:bg-gray-50">
-                          <TableHead className="font-bold text-gray-700 py-4">Product ID</TableHead>
+                          <TableHead className="font-bold text-gray-700 py-4">
+                            {selectedCategory === 'unique_sizes' ? 'Size' : 'Product ID'}
+                          </TableHead>
                           <TableHead className="font-bold text-gray-700 py-4">URL</TableHead>
                           <TableHead className="font-bold text-gray-700 py-4 w-24">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {result.result[selectedCategory as keyof ValidationResult].examples
-                          .slice(0, 50)
-                          .map((example: ValidationExample, index: number) => {
-                            const exampleUrl = getExampleUrl(example)
+                        {(() => {
+                          const categoryData = getCategoryData(selectedCategory)
+                          if (!categoryData) return null
 
-                            return (
-                              <TableRow key={index} className="hover:bg-gray-50 transition-colors duration-150">
-                                <TableCell className="py-4">
+                          return categoryData.items.slice(0, 50).map((item, index) => (
+                            <TableRow key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
+                              <TableCell className="py-4">
+                                {item.type === 'size' ? (
                                   <code 
-                                    onClick={() => copyToClipboard(example.product_id, `id-${selectedCategory}-${index}`)}
+                                    onClick={() => copyToClipboard(item.size, `size-${selectedCategory}-${index}`)}
+                                    className={`px-3 py-2 rounded-xl text-sm font-semibold border cursor-pointer transition-colors whitespace-nowrap ${
+                                      copiedItems.has(`size-${selectedCategory}-${index}`) 
+                                        ? "bg-teal-100 text-teal-800 border-teal-200" 
+                                        : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+                                    }`}
+                                    title={item.size}
+                                  >
+                                    {item.size}
+                                  </code>
+                                ) : (
+                                  <code 
+                                    onClick={() => copyToClipboard(item.productId, `id-${selectedCategory}-${index}`)}
                                     className={`px-3 py-2 rounded-xl text-sm font-inconsolata font-semibold border cursor-pointer transition-colors whitespace-nowrap ${
                                       copiedItems.has(`id-${selectedCategory}-${index}`) 
                                         ? "bg-teal-100 text-teal-800 border-teal-200" 
                                         : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
                                     }`}
-                                    title={example.product_id}
+                                    title={item.productId}
                                   >
-                                    {example.product_id.length > 25 ? `${example.product_id.substring(0, 25)}...` : example.product_id}
+                                    {item.productId.length > 25 ? `${item.productId.substring(0, 25)}...` : item.productId}
                                   </code>
-                                </TableCell>
-                                <TableCell className="py-4">
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm text-gray-700 break-all leading-relaxed font-medium">
-                                        {exampleUrl || "No URL available"}
-                                      </p>
-                                    </div>
-                                    {exampleUrl && (
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => copyToClipboard(exampleUrl, `url-${selectedCategory}-${index}`)}
-                                        className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-200 rounded-xl transition-colors"
-                                      >
-                                        {copiedItems.has(`url-${selectedCategory}-${index}`) ? (
-                                          <Check className="w-4 h-4 text-green-600" />
-                                        ) : (
-                                          <Copy className="w-4 h-4 text-gray-500" />
-                                        )}
-                                      </Button>
-                                    )}
+                                )}
+                              </TableCell>
+                              <TableCell className="py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-700 break-all leading-relaxed font-medium">
+                                      {item.url || "No URL available"}
+                                    </p>
                                   </div>
-                                </TableCell>
-                                <TableCell className="py-4">
-                                  {exampleUrl && (
+                                  {item.url && (
                                     <Button
                                       type="button"
                                       variant="ghost"
                                       size="sm"
-                                      asChild
-                                      className="h-8 w-8 p-0 hover:bg-violet-100 rounded-xl transition-colors"
+                                      onClick={() => item.url && copyToClipboard(item.url, `url-${selectedCategory}-${index}`)}
+                                      className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-200 rounded-xl transition-colors"
                                     >
-                                      <a href={exampleUrl} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="w-4 h-4 text-violet-600" />
-                                      </a>
+                                      {copiedItems.has(`url-${selectedCategory}-${index}`) ? (
+                                        <Check className="w-4 h-4 text-green-600" />
+                                      ) : (
+                                        <Copy className="w-4 h-4 text-gray-500" />
+                                      )}
                                     </Button>
                                   )}
-                                </TableCell>
-                              </TableRow>
-                            )
-                          })}
+                                </div>
+                              </TableCell>
+                              <TableCell className="py-4">
+                                {item.url && (
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    asChild
+                                    className="h-8 w-8 p-0 hover:bg-violet-100 rounded-xl transition-colors"
+                                  >
+                                    <a href={item.url} target="_blank" rel="noopener noreferrer">
+                                      <ExternalLink className="w-4 h-4 text-violet-600" />
+                                    </a>
+                                  </Button>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        })()}
                       </TableBody>
                     </Table>
                   </div>
 
-                  {result.result[selectedCategory as keyof ValidationResult].examples.length > 50 && (
-                    <div className="p-4 bg-gray-50 text-center border-t border-gray-200">
-                      <span className="text-sm font-semibold text-gray-600">
-                        Showing 50 of {result.result[selectedCategory as keyof ValidationResult].total} issues
-                      </span>
-                    </div>
-                  )}
+                  {(() => {
+                    const categoryData = getCategoryData(selectedCategory)
+                    return categoryData && categoryData.items.length > 50 ? (
+                      <div className="p-4 bg-gray-50 text-center border-t border-gray-200">
+                        <span className="text-sm font-semibold text-gray-600">
+                          Showing 50 of {categoryData.total} {selectedCategory === 'unique_sizes' ? 'sizes' : 'issues'}
+                        </span>
+                      </div>
+                    ) : null
+                  })()}
                 </div>
               ) : (
                 <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm text-center">
