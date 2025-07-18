@@ -2,8 +2,10 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Activity, ExternalLink, Clock, Copy, Check, Trash2 } from "lucide-react"
+import { ExternalLink, Clock, Copy, Check, Trash2, RefreshCw, Database } from "lucide-react"
+import Navigation from "@/components/Navigation"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 interface JobEntry {
   id: string
@@ -11,14 +13,61 @@ interface JobEntry {
   domain: string
 }
 
+interface CachedJob {
+  id: string
+  data: any
+  timestamp: string
+  domain: string
+}
+
+// Cache management functions
+const CACHE_KEY = 'validationCache'
+const MAX_CACHE_SIZE = 5
+
+const getCachedJobs = (): CachedJob[] => {
+  if (typeof window === 'undefined') return []
+  try {
+    return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+
+const setCachedJobs = (jobs: CachedJob[]) => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(jobs))
+  } catch (error) {
+    console.error('Failed to save cache:', error)
+  }
+}
+
+const removeFromCache = (jobId: string) => {
+  const cachedJobs = getCachedJobs()
+  const updatedJobs = cachedJobs.filter(job => job.id !== jobId)
+  setCachedJobs(updatedJobs)
+}
+
+const clearCache = () => {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(CACHE_KEY)
+}
+
+const getTotalIssues = (result: any): number => {
+  if (!result || !result.result) return 0
+  return Object.values(result.result).reduce((sum: number, category: any) => sum + (category.total || 0), 0)
+}
+
 export default function BrowsePage() {
   const [jobHistory, setJobHistory] = useState<JobEntry[]>([])
+  const [cachedJobs, setCachedJobs] = useState<CachedJob[]>([])
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedJobIds = JSON.parse(localStorage.getItem('validatedJobIds') || '[]')
       setJobHistory(storedJobIds)
+      setCachedJobs(getCachedJobs())
     }
   }, [])
 
@@ -43,10 +92,28 @@ export default function BrowsePage() {
 
   const removeJob = (jobId: string) => {
     if (typeof window !== 'undefined') {
+      // Remove from job history
       const updatedHistory = jobHistory.filter(job => job.id !== jobId)
       localStorage.setItem('validatedJobIds', JSON.stringify(updatedHistory))
       setJobHistory(updatedHistory)
+      
+      // Also remove from validation cache
+      removeFromCache(jobId)
+      setCachedJobs(getCachedJobs())
     }
+  }
+
+  const clearAllCache = () => {
+    clearCache()
+    setCachedJobs([])
+  }
+
+  const removeCachedJob = (jobId: string) => {
+    removeFromCache(jobId)
+    // Force refresh the cached jobs list
+    setTimeout(() => {
+      setCachedJobs(getCachedJobs())
+    }, 100)
   }
 
   const formatDate = (timestamp: string) => {
@@ -59,59 +126,55 @@ export default function BrowsePage() {
     })
   }
 
+  // Create a unified list of all jobs
+  const allJobs = jobHistory.map(job => ({
+    ...job,
+    isCached: cachedJobs.some(cached => cached.id === job.id),
+    cachedData: cachedJobs.find(cached => cached.id === job.id)
+  }))
+
   return (
     <div className="min-h-screen bg-white font-inter">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <a href="/" className="flex items-center gap-2 no-underline">
-            <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md shadow-violet-500/25">
-              <Activity className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                preworkd
-              </h1>
-              <p className="text-gray-600 text-sm font-medium">
-                Fixing your data mistakes—gently mocking them along the way.
-              </p>
-            </div>
-          </a>
-          
-          <nav className="flex items-center gap-6">
-            <a href="/" className="text-gray-600 hover:text-violet-600 font-medium transition-colors">
-              Validate
-            </a>
-            <a href="/browse" className="text-violet-600 font-semibold border-b-2 border-violet-600 pb-1">
-              Browse
-            </a>
-            <a href="/settings" className="text-gray-600 hover:text-violet-600 font-medium transition-colors">
-              Settings
-            </a>
-          </nav>
-        </div>
+        <Navigation currentPage="browse" />
 
         {/* Content */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-xl font-bold text-gray-900">Validation History</h2>
-              <p className="text-gray-600 text-sm mt-1">Recently validated Job IDs</p>
+              <p className="text-gray-600 text-sm mt-1">
+                Recently validated Job IDs with cache status
+              </p>
             </div>
-            {jobHistory.length > 0 && (
-              <Button
-                onClick={clearHistory}
-                variant="outline"
-                size="sm"
-                className="text-red-600 border-red-200 hover:bg-red-50"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Clear History
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {jobHistory.length > 0 && (
+                <Button
+                  onClick={clearHistory}
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Clear History
+                </Button>
+              )}
+              {cachedJobs.length > 0 && (
+                <Button
+                  onClick={clearAllCache}
+                  variant="outline"
+                  size="sm"
+                  className="text-amber-600 border-amber-200 hover:bg-amber-50"
+                >
+                  <Database className="w-4 h-4 mr-2" />
+                  Clear Cache
+                </Button>
+              )}
+            </div>
           </div>
 
-          {jobHistory.length === 0 ? (
+          {allJobs.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Clock className="w-8 h-8 text-gray-400" />
@@ -126,26 +189,44 @@ export default function BrowsePage() {
             </div>
           ) : (
             <div className="grid gap-4">
-              {jobHistory.map((job, index) => (
+              {allJobs.map((job, index) => (
                 <div
-                  key={index}
+                  key={job.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <ExternalLink className="w-5 h-5 text-purple-600" />
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      job.isCached ? 'bg-amber-100' : 'bg-purple-100'
+                    }`}>
+                      {job.isCached ? (
+                        <Database className="w-5 h-5 text-amber-600" />
+                      ) : (
+                        <ExternalLink className="w-5 h-5 text-purple-600" />
+                      )}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <code className="bg-gray-100 px-2 py-1 rounded text-sm font-inconsolata font-semibold">
                           {job.id}
                         </code>
-                        <span className="text-sm font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded">
+                        <span className={`text-sm font-medium px-2 py-1 rounded ${
+                          job.isCached 
+                            ? 'text-amber-600 bg-amber-100' 
+                            : 'text-purple-600 bg-purple-100'
+                        }`}>
                           {job.domain}
                         </span>
+                        {job.isCached && job.cachedData && (
+                          <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 px-2 py-0.5 text-xs font-semibold">
+                            {getTotalIssues(job.cachedData.data)} issues
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
                         {formatDate(job.timestamp)}
+                        {job.isCached && (
+                          <span className="ml-2 text-amber-600 font-medium">• Cached</span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -184,12 +265,43 @@ export default function BrowsePage() {
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
-                    <Button
-                      asChild
-                      size="sm"
-                    >
-                      <a href={`/?id=${job.id}`}>Validate</a>
-                    </Button>
+                    {job.isCached && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeCachedJob(job.id)}
+                        className="text-amber-600 hover:bg-amber-50"
+                        title="Remove from cache only"
+                      >
+                        <Database className="w-4 h-4" />
+                      </Button>
+                    )}
+                    
+                    {/* Action Buttons */}
+                    <div className="flex gap-1">
+                      <Button
+                        asChild
+                        size="sm"
+                        className="bg-violet-600 hover:bg-violet-700 text-white"
+                      >
+                        <a href={`/?id=${job.id}`}>
+                          <RefreshCw className="w-4 h-4 mr-1" />
+                          Validate
+                        </a>
+                      </Button>
+                      {job.isCached && (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="bg-amber-600 hover:bg-amber-700 text-white"
+                        >
+                          <a href={`/?id=${job.id}`}>
+                            <Database className="w-4 h-4 mr-1" />
+                            View Cache
+                          </a>
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
