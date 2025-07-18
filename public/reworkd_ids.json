@@ -1,0 +1,666 @@
+[
+  {
+    "id": "f459f3b7-7d8f-4351-8ab7-3faf4a67d943",
+    "site": "https://www.kemosabe.com/"
+  },
+  {
+    "id": "93fdaa41-c74a-4378-8722-8bd1ebadd985",
+    "site": "https://www.ralphlauren.com/seocontent?n=productsitemap_0"
+  },
+  {
+    "id": "cad72271-c8cf-4a20-a507-c3fccbc04b9b",
+    "site": "https://stetson.com/sitemap_products_1.xml?from=5006585659437&to=99999999999999999999999999"
+  },
+  {
+    "id": "e66b6d35-0c24-4202-9dbe-10d12c560512",
+    "site": "https://www.lucchese.com/sitemap_products_1.xml?from=6643792380077&to=99999999999999999999999999"
+  },
+  {
+    "id": "ba144b77-aa58-41f5-9da2-87f3b8634b24",
+    "site": "https://www.chanel.com/us/sitemap.xml"
+  },
+  {
+    "id": "cfa3820c-8c76-4f73-b75b-572c80c9cee1",
+    "site": "https://www.aloyoga.com/sitemap_products_2.xml?from=7902719672500&to=999999999999999999999999999999999"
+  },
+  {
+    "id": "0c7ef52d-21e9-43fe-aa4b-f9172ac23733",
+    "site": "https://wardrobe.nyc/sitemap_products_1.xml?from=6559706480736&to=99999999999999999999999999"
+  },
+  {
+    "id": "8459a794-045d-4b1f-9115-56df2f2f37ff",
+    "site": "https://www.zara.com/"
+  },
+  {
+    "id": "903e6d6c-ea54-4ace-b2b1-376e86496451",
+    "site": "https://www.zimmermann.com/media/sitemap/sitemap_us.xml"
+  },
+  {
+    "id": "dc602b65-b5a4-4f7b-8738-169aebd7a499",
+    "site": "https://www.wolford.com/sitemap_index.xml"
+  },
+  {
+    "id": "0cc8f580-3015-4881-bce9-d3c176b26b79",
+    "site": "https://www.versace.com/sitemap-en_us-pdp_0.xml"
+  },
+  {
+    "id": "2429c3e9-41da-4a21-b981-490682ac6d6e",
+    "site": "https://us.victoriabeckham.com/sitemap_products_1.xml?from=1792390103082&to=99999999999999999999999999"
+  },
+  {
+    "id": "5cf18f6a-d852-41d4-abd7-285cf3a23cd3",
+    "site": "https://veronicabeard.com/sitemap_products_1.xml?from=3409937104996&to=99999999999999999999999999"
+  },
+  {
+    "id": "6ad0f5aa-5cd2-45f5-91ae-471d47056b5b",
+    "site": "https://www.varley.com/sitemap.xml"
+  },
+  {
+    "id": "8a59fb65-bc11-417f-b354-7b0c6dbef19e",
+    "site": "https://www.valentino.com/en-us-sitemap_products.xml"
+  },
+  {
+    "id": "bb269b57-db94-4cc1-a7a5-793fcaa75090",
+    "site": "https://www.veja-store.com/en_us/"
+  },
+  {
+    "id": "d1183826-6391-4e12-955f-25c3db736bb3",
+    "site": "https://ullajohnson.com/sitemap_products_1.xml?from=4512592035936&to=99999999999999999999999999"
+  },
+  {
+    "id": "d6118178-7217-42e1-a756-226809404bf1",
+    "site": "https://tnuck.com/sitemap.xml"
+  },
+  {
+    "id": "00c686f7-7dd6-4018-903b-058bff95e866",
+    "site": "https://www.superga-usa.com/sitemap_products_1.xml?from=7093909782590&to=99999999999999999999999999"
+  },
+  {
+    "id": "0955394b-54e4-4c7b-a83d-e797819bf5c0",
+    "site": "https://thisisthegreat.com/sitemap_products_1.xml?from=9523424080&to=99999999999999999999999999"
+  },
+  {
+    "id": "2a6532c4-68d5-42c1-8058-7d5ba01e8557",
+    "site": "https://www.sweatybetty.com/sitemap_0.xml"
+  },
+  {
+    "id": "a8a49d59-9c8b-4273-af6a-5f0168ee2f0e",
+    "site": "https://topshop.com/"
+  },
+  {
+    "id": "a8b80f21-667f-43d5-a0be-6a132217760e",
+    "site": "https://www.thenorthface.com/en-us/search?q=*"
+  },
+  {
+    "id": "b2d99421-6404-4538-9f10-857618ec70da",
+    "site": "https://toryburch.com"
+  },
+  {
+    "id": "c864e8f8-11c3-4ac5-a329-b05d3fcd6ebb",
+    "site": "https://thefrankieshop.com/sitemap.xml"
+  },
+  {
+    "id": "d1c8f347-24e9-4de8-93be-d6922872d15a",
+    "site": "https://www.tomfordfashion.com/sitemap_0-product.xml"
+  },
+  {
+    "id": "e214a708-fa2f-45e8-90f2-265536c708e9",
+    "site": "https://toteme.com/sitemap_products_1.xml?from=6009442730148&to=99999999999999999999999999"
+  },
+  {
+    "id": "11ff2750-02d5-4f68-8414-a0f3ca3b2b13",
+    "site": "https://staud.clothing/sitemap_products_1.xml?from=8508277835&to=99999999999999999999999999"
+  },
+  {
+    "id": "258cabbe-e449-4d03-a69f-aa9f9ff1fe43",
+    "site": "https://skims.com/sitemap-products.xml"
+  },
+  {
+    "id": "2c648ab6-08ae-4d0b-9c3c-0ff6352e3c28",
+    "site": "https://www.sezane.com/sitemap-us.xml"
+  },
+  {
+    "id": "2d305701-fc56-4911-a149-f53c695e21e2",
+    "site": "https://splendid.com/sitemap_products_1.xml?from=6734359134281&to=99999999999999999999999999"
+  },
+  {
+    "id": "91fbcc47-1b9e-4412-bfb3-ef11b5a3abde",
+    "site": "https://sensistudio.com/sitemap_products_1.xml?from=6053220679841&to=99999999999999999999999999"
+  },
+  {
+    "id": "d5159b84-7bcc-4b26-96a8-962d976ea784",
+    "site": "https://www.self-portrait.com/sitemap_products_1.xml?from=7478795337947&to=99999999999999999999999999"
+  },
+  {
+    "id": "d684142c-7619-46b4-a227-c8e3c869e872",
+    "site": "https://www.stellamccartney.com/sitemap-product_en_US.xml"
+  },
+  {
+    "id": "d7eb77d3-e050-4414-b713-b84147c7dbf7",
+    "site": "https://simkhai.com/sitemap_products_1.xml?from=1955739140194&to=99999999999999999999999999"
+  },
+  {
+    "id": "ea1097d3-d402-4c6c-80c0-952e45962b5b",
+    "site": "https://www.stuartweitzman.com/sitemap_0-product.xml"
+  },
+  {
+    "id": "08806fc1-0d19-457e-97ed-6a4d316e8250",
+    "site": "https://sea-ny.com/sitemap_products_1.xml?from=1130268491812&to=99999999999999999999999999"
+  },
+  {
+    "id": "217e2ee7-7dd7-4779-b918-36fe6ae6168b",
+    "site": "https://www.rodebjer.com/us/shop/shop-by-category/view-all/"
+  },
+  {
+    "id": "4f37866c-14cf-4b73-a984-deb4b6ee5280",
+    "site": "https://shoprodarte.com/sitemap_products_1.xml?from=4410141114416&to=99999999999999999999999999"
+  },
+  {
+    "id": "5d79be58-e881-407c-9c37-890a987ee2d1",
+    "site": "https://www.chloe.com/sitemap_us_chloe.xml"
+  },
+  {
+    "id": "747cc3f0-11ed-4dab-a744-fe009f07a908",
+    "site": "https://rosieassoulin.com/sitemap_products_1.xml?from=7892345815252&to=99999999999999999999999999"
+  },
+  {
+    "id": "c40890f8-50ac-4990-a05c-1e1f135fd6bc",
+    "site": "https://saloniworld.com/sitemap_products_1.xml?from=4381496868995&to=99999999999999999999999999"
+  },
+  {
+    "id": "d322c0cb-bf10-4897-9681-548030ac0775",
+    "site": "https://www.ysl.com/en-us/sitemaps/0/sitemap-products.xml"
+  },
+  {
+    "id": "d6462cf2-47ca-4d1d-bccd-d2d07449f69b",
+    "site": "https://us.sandro-paris.com/sitemap_0.xml"
+  },
+  {
+    "id": "0c3585f2-f6a5-43d6-9d00-225859bec31d",
+    "site": "https://www.revolve.com/dresses/br/a8e981/?&keyword=*"
+  },
+  {
+    "id": "202754d1-b337-4690-bc48-0b1862407071",
+    "site": "https://www.ray-ban.com/usa/sitemap.xml"
+  },
+  {
+    "id": "2bcbec11-1c67-43b6-b5d0-f7f2aa53916b",
+    "site": "https://www.ramybrook.com/sitemap_products_1.xml?from=3392933888064&to=99999999999999999999999999"
+  },
+  {
+    "id": "37314d62-8bb9-4657-a17d-e267d29473f1",
+    "site": "https://www.quay.com/sitemap_products_1.xml?from=9904042190&to=7541738635350"
+  },
+  {
+    "id": "43a0caa0-db4c-4fcc-b6ac-2932ac062d05",
+    "site": "https://rachelcomey.com/sitemap_products_1.xml?from=1549246234685&to=99999999999999999999999999"
+  },
+  {
+    "id": "c832e107-5eca-4226-a887-fcb6ad118821",
+    "site": "https://www.rag-bone.com/sitemap_1.xml"
+  },
+  {
+    "id": "d5db0e43-036e-47da-a43c-3f7ce391599c",
+    "site": "https://www.thereformation.com/sitemap_0-product.xml"
+  },
+  {
+    "id": "e576a1bc-8c38-4d63-9817-6feb02b5a986",
+    "site": "https://www.rails.com/sitemap_products_1.xml?from=1436789702736&to=99999999999999999999999999"
+  },
+  {
+    "id": "ee392cc9-8ace-4473-86a9-dcae24ebec7c",
+    "site": "https://www.prada.com/sitemap_product_US_en_0.xml"
+  },
+  {
+    "id": "116b1389-7b04-4c58-9f48-e497570ba165",
+    "site": "https://morganlane.com"
+  },
+  {
+    "id": "3f05d3ce-8843-4bfa-a8bc-e0b65ab4963d",
+    "site": "https://oliverpeoples.com"
+  },
+  {
+    "id": "516ecfd4-fa60-4cb0-89b1-a8c9434037f5",
+    "site": "https://www.poupettestbarth.com/sitemap_products_1.xml?from=6794022092846&to=99999999999999999999999999"
+  },
+  {
+    "id": "548d8986-908e-42b3-9717-8e0f6682caa9",
+    "site": "https://wearepoolside.com/sitemap_products_1.xml?from=2148896505923&to=99999999999999999999999999"
+  },
+  {
+    "id": "7700b12f-e744-472f-a1ed-a08f2a87b45d",
+    "site": "https://moussy-global.com/sitemap_products_1.xml?from=6559172853824&to=99999999999999999999999999"
+  },
+  {
+    "id": "8ec9c369-6d0b-4c51-ab57-51da48c2637c",
+    "site": "https://www.nanushka.com/sitemap_products_1.xml?from=8437063778593&to=99999999999999999999999999"
+  },
+  {
+    "id": "904afd7f-c133-424e-8706-43ce72c07c09",
+    "site": "https://www.nike.com/sitemap-v2-pdp-en-us.xml"
+  },
+  {
+    "id": "9e1ee76a-7096-437e-8c66-201aadfde819",
+    "site": "https://naadam.co/sitemap_products_1.xml?from=69989597204&to=99999999999999999999999999"
+  },
+  {
+    "id": "eee8c57a-1d89-429e-ad34-da39e3cbc0a6",
+    "site": "https://www.newbalance.com/sitemap_0-product.xml"
+  },
+  {
+    "id": "0074bed0-c544-46b1-ae25-d7a754d54ae9",
+    "site": "https://www.marni.com/en-us/sitemap-en-us.xml"
+  },
+  {
+    "id": "173932bb-7a64-49fc-8f4f-528205bc7ce7",
+    "site": "https://shop.mikoh.com/sitemap_products_1.xml?from=367907041&to=&to=99999999999999999999999999"
+  },
+  {
+    "id": "6d10a2f2-d0ca-4d8d-8007-b796cd027321",
+    "site": "https://www.moncler.com"
+  },
+  {
+    "id": "746b1ff4-dba4-4c5d-b0be-91d9085ab52b",
+    "site": "https://www.miumiu.com/sitemap_product_US_en_0.xml"
+  },
+  {
+    "id": "997ad5d3-9da1-4cbe-858e-008faaaf94e2",
+    "site": "https://www.monrow.com/sitemap_products_1.xml?from=9535379460&to=99999999999999999999999999"
+  },
+  {
+    "id": "9d7d8a1b-c6c7-40f0-9694-74b50d8936fa",
+    "site": "https://mejuri.com/sitemap.xml"
+  },
+  {
+    "id": "bcb84b85-5b7a-4e18-a7ad-8756f28760ae",
+    "site": "https://missoni.com"
+  },
+  {
+    "id": "fc9c07ea-7df5-4cb8-a324-084aa2c92de1",
+    "site": "https://us.mcmworldwide.com/sitemap-pages-en-PRODUCT-1.xml"
+  },
+  {
+    "id": "57cbfead-a9f3-417f-bbef-7f58851635cf",
+    "site": "https://www.wearlively.com/sitemap_products_1.xml?from=4881989830&to=99999999999999999999999999"
+  },
+  {
+    "id": "6a631c11-a2bc-4715-908e-5af279c360b7",
+    "site": "https://loefflerrandall.com/sitemap_products_1.xml?from=4374371532852&to=99999999999999999999999999"
+  },
+  {
+    "id": "6be31449-219d-4707-9722-12cee8766d10",
+    "site": "https://www.manoloblahnik.com/us/?query=%2A"
+  },
+  {
+    "id": "74113eff-f93a-4528-b671-70daa912ddce",
+    "site": "https://www.madewell.com/sitemap_index.xml"
+  },
+  {
+    "id": "bf69d2ba-0cfd-426d-aaad-6d57384e7562",
+    "site": "https://www.longchamp.com/on/demandware.static/-/Library-Sites-sitemaps/default/dwfa38ddae/US/sitemap_en_US_product_1.xml"
+  },
+  {
+    "id": "cb061db5-3e2c-4e88-8603-619125c167a8",
+    "site": "https://www.loewe.com/usa/sitemap_0-product.xml"
+  },
+  {
+    "id": "e821123b-ee92-4431-a3e3-0888c97fa2d3",
+    "site": "https://lespecs.com/sitemap_products_1.xml?from=3063036608576&to=99999999999999999999999999"
+  },
+  {
+    "id": "f8be5b93-3350-4e89-bd30-c1c970e141b9",
+    "site": "https://www.lelesadoughi.com/sitemap_products_1.xml?from=5684325185&to=99999999999999999999999999"
+  },
+  {
+    "id": "16427955-bcf6-4cf7-9a7b-89d31a39e50e",
+    "site": "https://jwanderson.com/sitemap_products_1.xml?from=7961173295204&to=99999999999999999999999999"
+  },
+  {
+    "id": "182075bf-8c13-4988-b37c-652db827cafd",
+    "site": "https://laquansmith.com/sitemap_products_1.xml?from=540884860986&to=99999999999999999999999999"
+  },
+  {
+    "id": "278ea2c2-6349-4fa2-b68a-ca4c11bb0e79",
+    "site": "https://lackofcolor.com/sitemap_products_1.xml?from=7825345808&to=99999999999999999999999999"
+  },
+  {
+    "id": "3ca7eefd-b87f-4642-89aa-a74ad6499627",
+    "site": "https://www.johannaortiz.com/sitemap_products_1.xml?from=8027749777646&to=99999999999999999999999999"
+  },
+  {
+    "id": "42396067-a030-41bf-878c-77fe59e64ee5",
+    "site": "https://shop.karlacolletto.com/categories"
+  },
+  {
+    "id": "4a56893b-40b0-48e8-9772-0cb681dc570b",
+    "site": "https://us.jimmychoo.com/sitemap_1.xml"
+  },
+  {
+    "id": "6e7ba315-8d66-4bcd-a138-cc455a2f6770",
+    "site": "https://www.ladoublej.com/en/search-results"
+  },
+  {
+    "id": "77d754f6-7b6a-4bed-851b-01b27a122d8a",
+    "site": "https://www.joesjeans.com/sitemap_products_1.xml?from=1764088479779&to=99999999999999999999999999"
+  },
+  {
+    "id": "f06f5a28-f9ad-4532-a1cd-d9f96abd8455",
+    "site": "https://www.krewe.com/sitemap_products_1.xml?from=276410761245&to=99999999999999999999999999"
+  },
+  {
+    "id": "010fc189-3564-49a0-a9d4-fcc8d1eef235",
+    "site": "https://jenniferzeuner.com/sitemap_products_1.xml?from=1241286475833&to=99999999999999999999999999"
+  },
+  {
+    "id": "133e5766-b32c-4b3c-843b-a6fd9d2fbfaf",
+    "site": "https://www.jcrew.com/sitemap/sitemap-index.xml"
+  },
+  {
+    "id": "1834c49a-2cf3-43cc-9da1-b645ea74f27a",
+    "site": "https://janessaleone.com/sitemap_products_1.xml?from=6189570629&to=99999999999999999999999999"
+  },
+  {
+    "id": "2e23c817-c907-45d5-b602-8bf5a1b95066",
+    "site": "https://www.jennikayne.com/sitemap_products_1.xml?from=6878847467693&to=99999999999999999999999999"
+  },
+  {
+    "id": "341a74c3-1221-4157-ac9b-3094384e5584",
+    "site": "https://www.iroparis.com/us/sitemap_0.xml"
+  },
+  {
+    "id": "513a1646-8cb5-4eee-9af6-719d2a9079df",
+    "site": "https://jennifermeyer.com/sitemap_products_1.xml?from=8450288909&to=99999999999999999999999999"
+  },
+  {
+    "id": "ba125d0d-151d-483f-bd00-2a1b65cb5647",
+    "site": "https://isabelmarant.com/sitemap_products_1.xml?from=9072347676984&to=14948335944053"
+  },
+  {
+    "id": "bebf9747-6e49-42a6-83db-8e58e430ab46",
+    "site": "https://illesteva.com/sitemap_products_1.xml?from=3586560327779&to=99999999999999999999999999"
+  },
+  {
+    "id": "c79bfd85-a8f1-48db-9098-fa5e96d4649f",
+    "site": "https://www.hunzag.com/sitemap_products_1.xml?from=6720043581621&to=99999999999999999999999999"
+  },
+  {
+    "id": "dd7a2737-5485-471e-89e8-b947b95ca3ee",
+    "site": "https://isabelmarant.com/sitemap_products_1.xml?from=9072347676984&to=99999999999999999999999999"
+  },
+  {
+    "id": "5193c1dc-147d-4b69-b15c-c4e59fe2d64f",
+    "site": "https://www.hillhousehome.com/sitemap_products_1.xml?from=3973434436&to=99999999999999999999999999"
+  },
+  {
+    "id": "6db6b8c5-bf8c-44f6-96bb-87f82a055479",
+    "site": "https://hatattack.com/sitemap_products_1.xml?from=4379019149401&to=99999999999999999999999999"
+  },
+  {
+    "id": "87c48dff-60d5-45f4-a39f-6f4ee2561149",
+    "site": "https://goop.com/search?q=*&country=USA&filterAndSort=%257B%2522filters%2522%253A%255B%257B%2522name%2522%253A%2522contentType%2522%252C%2522values%2522%253A%255B%2522Products%2522%255D%257D%255D%252C%2522sortBy%2522%253A%2522score%2522%252C%2522sortDirection%2522%253A%2522DESCENDING%2522%257D"
+  },
+  {
+    "id": "bd732f74-627f-4f4c-937c-23274ba8e554",
+    "site": "https://www.gorjana.com/sitemap_products_1.xml?from=2005866053691&to=99999999999999999999999999"
+  },
+  {
+    "id": "c6574d7a-e832-4952-83c1-486f2d60bd51",
+    "site": "https://www.goodamerican.com/sitemap_products.xml"
+  },
+  {
+    "id": "d2ce0c6d-3fa3-40ef-94ed-fcb3422a48dd",
+    "site": "https://www.gucci.com/us/en/sitemap.xml"
+  },
+  {
+    "id": "d5b8a3f3-0c2a-4d8b-9f09-16a97df906bc",
+    "site": "https://www.goldengoose.com/us/en/search?q=*&lang=en_US"
+  },
+  {
+    "id": "09be9f2a-ac98-4079-851b-0be1ae8a3b1a",
+    "site": "https://fredasalvador.com/sitemap_products_1.xml?from=172327241&to=99999999999999999999999999"
+  },
+  {
+    "id": "0cb7fc6d-e77b-4c67-a579-a04e00d07425",
+    "site": "https://www.ferragamo.com"
+  },
+  {
+    "id": "259025f7-0c1b-4abb-b0ca-6c33be93cf84",
+    "site": "https://www.ganni.com"
+  },
+  {
+    "id": "57a56859-a3ec-4bc0-bf78-cb51b6b56eea",
+    "site": "https://www.givenchy.com/sitemap-pages-en-us-1.xml"
+  },
+  {
+    "id": "68bee192-7aa6-4d24-a402-b237ebf3c696",
+    "site": "https://www.frankandeileen.com/sitemap_products_1.xml?from=175023915039&to=99999999999999999999999999"
+  },
+  {
+    "id": "83fcbf34-f681-4b58-a30f-892c0a87c224",
+    "site": "https://www.freepeople.com/products_sitemap.xml"
+  },
+  {
+    "id": "b62b9003-aada-4f41-9fef-b83cc467dab0",
+    "site": "https://frankiesbikinis.com/collections/clothing"
+  },
+  {
+    "id": "e13e6d76-7a43-43f4-8c1c-35ed78aa676e",
+    "site": "https://frame-store.com/sitemap_products_1.xml?from=24486412290&to=99999999999999999999999999"
+  },
+  {
+    "id": "e160214e-ccbf-408e-9dc3-8270debefde5",
+    "site": "https://www.givenchy.com/sitemap-pages-en-us-1.xml"
+  },
+  {
+    "id": "ec677f99-8d56-4881-b543-8f049ce79dbd",
+    "site": "https://www.giuseppezanotti.com/us/sitemap/sitemap.xml"
+  },
+  {
+    "id": "2529ce18-d531-422d-ad14-294ea3fb38f0",
+    "site": "https://www.dolcegabbana.com/en-us/sitemap-product_0.xml"
+  },
+  {
+    "id": "2dc6df9d-b693-495a-98c0-b11c84250224",
+    "site": "https://www.everlane.com/sitemap.xml"
+  },
+  {
+    "id": "361430c3-dcfd-4730-a057-332979b8b2a3",
+    "site": "https://faithfullthebrand.com/sitemap_products_1.xml?from=6725726732352&to=99999999999999999999999999"
+  },
+  {
+    "id": "4682839a-5757-4ecf-8b6b-2b392866e54d",
+    "site": "https://farmrio.com/sitemap_products_1.xml?from=2099235160131&to=99999999999999999999999999"
+  },
+  {
+    "id": "5190bb48-f3f0-4cdb-afa2-48040b44419e",
+    "site": "https://www.fendi.com/sitemap.xml"
+  },
+  {
+    "id": "bde156be-be80-4b1a-aa0f-a09d233a90ef",
+    "site": "https://www.dolcevita.com/sitemap_products_1.xml?from=1701052448834&to=99999999999999999999999999"
+  },
+  {
+    "id": "c51b90a6-e5c9-4dc4-8981-0c42a5c92fd4",
+    "site": "https://cuyana.com/sitemap_products_1.xml?from=8125976084795&to=99999999999999999999999999"
+  },
+  {
+    "id": "c68cd402-d571-4eca-a37c-57ec0b0cb4db",
+    "site": "https://commonprojects.com"
+  },
+  {
+    "id": "ce3a3797-127c-46f1-9d5f-4986c579953a",
+    "site": "https://www.dior.com/sitemap.xml"
+  },
+  {
+    "id": "f2a2ab26-3e73-4008-8472-bf5819d1d519",
+    "site": "https://www.deepagurnani.com/sitemap_products_1.xml?from=4536039686&to=99999999999999999999999999"
+  },
+  {
+    "id": "22caec45-6bb0-4a6f-8a71-0a782d635fcf",
+    "site": "https://us.christianlouboutin.com/us_en/sitemap/"
+  },
+  {
+    "id": "2836420f-b266-4f4a-aa46-318fca02b9bd",
+    "site": "https://www.wearcommando.com/sitemap_products_1.xml?from=51362772&to=99999999999999999999999999"
+  },
+  {
+    "id": "980ab704-b7bd-4c6c-b7c1-c8fef4f1eb97",
+    "site": "https://citizensofhumanity.com/sitemap_products_1.xml?from=4370560974945&to=99999999999999999999999999"
+  },
+  {
+    "id": "c349e5b2-231f-45d7-beea-667ec44d5af4",
+    "site": "https://cinqasept.nyc/sitemap_products_1.xml?from=365831847975&to=99999999999999999999999999"
+  },
+  {
+    "id": "c4af5083-132b-4680-a531-448e4bd48978",
+    "site": "https://www.coach.com/sitemap_0-product.xml"
+  },
+  {
+    "id": "dc57497c-778f-4599-b2d4-e8be33ad8c4d",
+    "site": "https://www.clarev.com/sitemap_products_1.xml?from=7097998407&to=99999999999999999999999999"
+  },
+  {
+    "id": "f3c15943-4b4a-4be5-8234-305288a7f4a9",
+    "site": "https://www.chloe.com/sitemap_us_chloe.xml"
+  },
+  {
+    "id": "fd64d377-299c-46be-9dfb-9e3ad052373e",
+    "site": "https://www.clubmonaco.com/sitemap_products_1.xml?from=6931726073928&to=99999999999999999999999999"
+  },
+  {
+    "id": "043f817b-cf43-495d-871d-a5378a01dbb3",
+    "site": "https://us.burberry.com/sitemap-us.xml"
+  },
+  {
+    "id": "1c244d82-39b0-4fb0-bff6-0c2e144fdb14",
+    "site": "https://carbon38.com/sitemap_products_1.xml?from=7328453525693&to=99999999999999999999999999"
+  },
+  {
+    "id": "2403603f-04bd-4317-a298-5648aa31a29b",
+    "site": "https://castaner.com/sitemap_products_1.xml?from=6780924100778&to=99999999999999999999999999"
+  },
+  {
+    "id": "25a02777-1b21-44de-ad72-c3c649a21647",
+    "site": "https://www.canadagoose.com/us/en/home-page"
+  },
+  {
+    "id": "27699e8f-d26d-4414-9e40-4936494d83fa",
+    "site": "https://www.bymalenebirger.com/sitemap_index.xml"
+  },
+  {
+    "id": "34220692-ada6-4c69-bb87-880d2c9763c4",
+    "site": "https://www.celine.com/en-us/sitemap_0-product.xml"
+  },
+  {
+    "id": "83b63b18-7975-4673-a60f-36599055a7db",
+    "site": "https://beyondyoga.com/sitemap_products_1.xml?from=4336409444451&to=99999999999999999999999999"
+  },
+  {
+    "id": "e323a140-74be-4496-90b8-e67f0c659fe6",
+    "site": "https://www.bottegaveneta.com/en-us/search?q=*"
+  },
+  {
+    "id": "f80013ab-0267-41b1-94fc-9063e0e1aa0c",
+    "site": "https://www.brandonmaxwellonline.com/sitemap_products_1.xml?from=4569381666904&to=8275704971352"
+  },
+  {
+    "id": "07ea0517-6639-4434-baa3-f1c08d691a00",
+    "site": "https://www.anthropologie.com/products_sitemap.xml"
+  },
+  {
+    "id": "090723bf-025c-4795-84f4-7de66b1d2868",
+    "site": "https://www.aquazzura.com"
+  },
+  {
+    "id": "2198c8de-ec22-430d-893c-14d7575cd9db",
+    "site": "https://beachriot.com/sitemap_products_1.xml?from=543670042677&to=99999999999999999999999999"
+  },
+  {
+    "id": "2acfcfd1-94a7-42a3-9232-306c13797f10",
+    "site": "https://banjanan.com/sitemap_products_1.xml?from=1693045424172&to=99999999999999999999999999"
+  },
+  {
+    "id": "596e2bac-1b70-49aa-b2d4-a7cb11426645",
+    "site": "https://www.athleticpropulsionlabs.com/sitemap_products_1.xml?from=4149476589619&to=99999999999999999999999999"
+  },
+  {
+    "id": "75a86328-e723-4338-8dd2-57f9581897f1",
+    "site": "https://www.aritzia.com/en/sitemap"
+  },
+  {
+    "id": "99d4d936-6f63-4473-ac67-eef02cdd5070",
+    "site": "https://www.balenciaga.com/en-us/search?q=*"
+  },
+  {
+    "id": "b735f78c-fcc0-4dde-b592-116dd4fb7035",
+    "site": "https://us.balmain.com/sitemap_0.xml"
+  },
+  {
+    "id": "b86f5ced-f356-4371-ba78-230e9dc2f4eb",
+    "site": "https://www.barbour.com/us/sitemap-product_us.xml"
+  },
+  {
+    "id": "e50571bf-fb58-4639-8121-b66575db14ae",
+    "site": "https://www.ancient-greek-sandals.com/sitemap_products_1.xml?from=7690363437126&to=99999999999999999999999999"
+  },
+  {
+    "id": "e545d6fe-d795-46f6-b714-c73b1bdee217",
+    "site": "https://www.aloyoga.com/sitemap_products_1.xml?from=135240450075&to=99999999999999999999999999"
+  },
+  {
+    "id": "f6039123-bf75-4990-a4e5-3139e2adf55e",
+    "site": "https://www.aninebing.com/sitemap_products_1.xml?from=104910785&to=999999999999999999999999999999999"
+  },
+  {
+    "id": "2a9a209c-1ba2-4420-a5b0-fb9308756634",
+    "site": "https://www.aliceandolivia.com/sitemap_0-product.xml"
+  },
+  {
+    "id": "1f697367-f5a8-4d6a-a09c-f12b1813f502",
+    "site": "https://agolde.com/sitemap_products_1.xml?from=4386443919453&to=99999999999999999999999999"
+  },
+  {
+    "id": "463c3fc6-ef35-41de-98ce-8e737a906ceb",
+    "site": "https://www.aguabendita.com/sitemap_products_1.xml?from=7261398761626&to=99999999999999999999999999"
+  },
+  {
+    "id": "70cb685d-aaff-4704-b462-4328af28d691",
+    "site": "https://www.acnestudios.com/sitemap_index.xml"
+  },
+  {
+    "id": "743f2851-64c5-41eb-b525-56ec9799052f",
+    "site": "https://www.agjeans.com/sitemap_products_1.xml?from=8248822661352&to=99999999999999999999999999"
+  },
+  {
+    "id": "c4871bf3-9436-423f-9e17-96be8fbaf014",
+    "site": "https://www.alexanderwang.com/us-en"
+  },
+  {
+    "id": "d1e8d31a-1e5c-4463-bd58-5607740185a5",
+    "site": "https://www.alexandermcqueen.com/en-us/sitemaps/0/sitemap-products.xml"
+  },
+  {
+    "id": "07966fac-21b7-4e7a-9bfb-88e2b8ea1772",
+    "site": "https://alcltd.com/sitemap_products_1.xml?from=3825342251111&to=99999999999999999999999999"
+  },
+  {
+    "id": "535e7947-428d-43cd-8cc0-891b5ae9710d",
+    "site": "https://www.theory.com/sitemap_1.xml"
+  },
+  {
+    "id": "1714a589-d507-4d80-a29b-6ead3dbe980c",
+    "site": "https://www.therow.com/sitemap_products_1.xml?from=6958080000105&to=99999999999999999999999999"
+  },
+  {
+    "id": "4e72aafc-aae5-48e7-a9e9-e841d1289b03",
+    "site": "https://www.shopbop.com/sitemap-index.xml"
+  },
+  {
+    "id": "95dae3b3-94a7-4f19-aabe-528a8a6898b9",
+    "site": "https://www.stellamccartney.com/sitemap-product_en_US.xml"
+  },
+  {
+    "id": "2553f13f-50e4-4a78-ae05-375facb261a9",
+    "site": "https://www.cos.com/en_usd.product.0.xml"
+  }
+]
