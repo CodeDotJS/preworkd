@@ -2,7 +2,8 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Activity, Save, RotateCcw, AlertTriangle } from "lucide-react"
+import { Save, RotateCcw, AlertTriangle } from "lucide-react"
+import Navigation from "@/components/Navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -94,33 +95,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-white font-inter">
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <a href="/" className="flex items-center gap-2 no-underline">
-            <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md shadow-violet-500/25">
-              <Activity className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                preworkd
-              </h1>
-              <p className="text-gray-600 text-sm font-medium">
-                Fixing your data mistakes—gently mocking them along the way.
-              </p>
-            </div>
-          </a>
-          
-          <nav className="flex items-center gap-6">
-            <a href="/" className="text-gray-600 hover:text-violet-600 font-medium transition-colors">
-              Validate
-            </a>
-            <a href="/browse" className="text-gray-600 hover:text-violet-600 font-medium transition-colors">
-              Browse
-            </a>
-            <a href="/settings" className="text-violet-600 font-semibold border-b-2 border-violet-600 pb-1">
-              Settings
-            </a>
-          </nav>
-        </div>
+        <Navigation currentPage="settings" />
 
         {/* Content */}
         <div className="max-w-2xl">
