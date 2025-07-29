@@ -248,8 +248,13 @@ export default function BrowsePage() {
                       size="sm"
                       onClick={() => {
                         const reworkdBaseUrl = typeof window !== 'undefined' 
-                          ? localStorage.getItem('reworkdBaseUrl') || 'https://app.reworkd.ai/groups/949a6e3b-e9e9-4293-b42f-4b19a4f130a0/root/'
-                          : 'https://app.reworkd.ai/groups/949a6e3b-e9e9-4293-b42f-4b19a4f130a0/root/'
+                          ? localStorage.getItem('reworkdBaseUrl') || process.env.NEXT_PUBLIC_DEFAULT_REWORKD_BASE_URL
+                          : process.env.NEXT_PUBLIC_DEFAULT_REWORKD_BASE_URL
+                        
+                        if (!reworkdBaseUrl) {
+                          console.error('Reworkd base URL not configured. Please set NEXT_PUBLIC_DEFAULT_REWORKD_BASE_URL environment variable.')
+                          return
+                        }
                         const reworkdUrl = `${reworkdBaseUrl}${job.id}`
                         window.open(reworkdUrl, '_blank')
                       }}
