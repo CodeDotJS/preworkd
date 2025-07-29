@@ -1,126 +1,48 @@
 # preworkd
 
-A modern, user-friendly dashboard for validating job data and identifying issues.
+A data validation tool for fixing data mistakes with a gentle mocking approach.
 
-## ✨ Features
+## Quick Start
 
-### 🔍 Validation
-- **Job ID & URL Input**: Accepts both raw Job IDs and full reworkd.ai URLs
-- **Real-time Validation**: Instantly validates job data against configurable API endpoints
-- **Issue Categorization**: Organizes validation issues into clear categories
-- **Domain Detection**: Automatically extracts and displays the source domain
-
-### 📊 Results Display
-- **Compact Left Panel**: Overview with domain, status, and issue counts
-- **Detailed Right Panel**: Comprehensive issue breakdown with product IDs and URLs
-- **Copy Functionality**: One-click copying of product IDs and URLs
-- **External Navigation**: Direct links to jobs in reworkd.ai
-
-### 📁 Browse History
-- **Local Storage**: Automatically saves last 20 validated Job IDs
-- **Quick Access**: View, copy, or re-validate previous jobs
-- **Domain Tracking**: See which domains were validated
-
-### ⚙️ Settings
-- **Custom API Endpoints**: Configure your own validation API
-- **Reworkd Base URL**: Customize the base URL for job navigation
-- **Local Storage**: All settings stored in browser
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+ 
-- pnpm (recommended) or npm
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone git@github.com:CodeDotJS/preworkd.git
-cd preworkd
-```
-
-2. Install dependencies:
+1. **Install dependencies:**
 ```bash
 pnpm install
 ```
 
-3. Start the development server:
+2. **Set up environment variables:**
+```bash
+cp .env.example .env
+# Edit .env with your API endpoints and allowed groups
+```
+
+3. **Start development server:**
 ```bash
 pnpm dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. **Open [http://localhost:3000](http://localhost:3000)**
 
-## 🛠️ Usage
+## Environment Variables
 
-### Basic Validation
-1. Enter a Job ID or paste a full reworkd.ai URL
-2. Click "Validate" to analyze the job data
-3. Review issues by category in the left panel
-4. Click categories to see detailed breakdowns
+Required variables in `.env`:
+- `NEXT_PUBLIC_DEFAULT_API_ENDPOINT`: Validation API endpoint
+- `NEXT_PUBLIC_DEFAULT_REWORKD_BASE_URL`: Reworkd base URL  
+- `NEXT_PUBLIC_ALLOWED_GROUPS`: Comma-separated list of allowed groups for settings access
 
-### Navigation
-- **/** - Main validation page
-- **/browse** - View validation history
-- **/settings** - Configure API endpoints and URLs
+## Usage
 
-### Configuration
-Visit `/settings` to customize:
-- **API Endpoint**: URL for your validation service
-- **Reworkd Base URL**: Base URL for job navigation
+- **Validate Jobs**: Enter job ID, paste URL, or search domains with `@`
+- **Browse History**: View validation history and manage cached jobs
+- **Settings**: Configure API endpoints (requires group authentication)
 
-## 🏗️ Architecture
+## Features
 
-- **Frontend**: Next.js 14 with TypeScript
-- **Styling**: Tailwind CSS with custom design system
-- **Components**: Radix UI primitives with shadcn/ui
-- **API**: Server-side proxy to avoid CORS issues
-- **Storage**: Browser localStorage for settings and history
+- Job validation with caching (last 5 jobs)
+- Domain search functionality
+- Settings access control
+- Relative time display
+- Error handling with fun messages
 
-## 📁 Project Structure
+## License
 
-```
-├── app/                  # Next.js app router
-│   ├── api/              # API routes
-│   ├── browse/           # History page
-│   ├── settings/         # Settings page
-│   └── page.tsx          # Main validation page
-├── components/           # Reusable UI components
-├── public/               # Static assets (including goat.svg)
-└── styles/               # Global styles
-```
-
-## 🎨 Design System
-
-- **Colors**: Violet/purple gradients with gray neutrals
-- **Typography**: Inter for UI, Inconsolata for code/IDs
-- **Icons**: Lucide React icon library
-- **Layout**: Responsive grid with compact left, detailed right panels
-
-## 🔧 API Integration
-
-The application proxies requests through `/api/validate/[jobId]` to avoid CORS issues. Configure your validation endpoint in settings.
-
-## 📱 Responsive Design
-
-Optimized for desktop and mobile with:
-- Collapsible navigation on small screens
-- Responsive grid layouts
-- Touch-friendly interactive elements
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-*"Fixing your data mistakes—gently mocking them along the way." - preworkd*
+MIT © [Rishi Giri](https://rishi.rest)
