@@ -19,8 +19,6 @@ import {
   Check,
   ChevronRight,
   RefreshCw,
-  Shield,
-  X,
 } from "lucide-react"
 import Navigation from "@/components/Navigation"
 
@@ -151,8 +149,6 @@ const removeFromCache = (jobId: string) => {
 }
 
 export default function ValidationDashboard() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [groupInput, setGroupInput] = useState("")
   const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<ApiResponse | null>(null)
@@ -166,9 +162,6 @@ export default function ValidationDashboard() {
   const [searchResults, setSearchResults] = useState<JobEntry[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-
-  const allowedGroups = process.env.NEXT_PUBLIC_ALLOWED_GROUPS?.split(',').map(g => g.trim().toLowerCase()) || []
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -213,43 +206,8 @@ export default function ValidationDashboard() {
     }
   }, [showSearchResults])
 
-  const authenticate = () => {
-    const inputGroup = groupInput.trim().toLowerCase()
-    if (allowedGroups.includes(inputGroup)) {
-      setIsAuthenticated(true)
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('validationAuthenticated', 'true')
-      }
-      setMessage({ type: 'success', text: `Welcome, ${groupInput.trim()}! You can now validate jobs.` })
-      setTimeout(() => setMessage(null), 3000)
-    } else {
-      setMessage({ type: 'error', text: 'Invalid group. Please try again.' })
-      setTimeout(() => setMessage(null), 3000)
-    }
-  }
-
-  const logout = () => {
-    setIsAuthenticated(false)
-    setGroupInput("")
-    setInput("")
-    setResult(null)
-    setSelectedCategory(null)
-    setIsFromCache(false)
-    setCacheTimestamp('')
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('validationAuthenticated')
-    }
-  }
-
   const validateJob = async (inputValue: string, forceRefresh: boolean = false) => {
     if (!inputValue.trim()) return
-
-    // Check authentication
-    if (!isAuthenticated) {
-      setMessage({ type: 'error', text: 'Please authenticate to validate jobs.' })
-      setTimeout(() => setMessage(null), 3000)
-      return
-    }
 
     setLoading(true)
     setError(null)
@@ -566,98 +524,8 @@ export default function ValidationDashboard() {
         {/* Header */}
         <Navigation currentPage="validate" />
 
-        {/* Authentication Check */}
-        {!isAuthenticated ? (
-          <div className="max-w-md mx-auto">
-            <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
-                <p className="text-gray-600">Please authenticate to validate jobs</p>
-              </div>
-
-              {message && (
-                <Alert className={`mb-6 ${
-                  message.type === 'success' 
-                    ? 'bg-green-50 border-green-200' 
-                    : 'bg-red-50 border-red-200'
-                }`}>
-                  <AlertTriangle className={`w-5 h-5 ${
-                    message.type === 'success' ? 'text-green-600' : 'text-red-600'
-                  }`} />
-                  <AlertDescription className={`${
-                    message.type === 'success' ? 'text-green-800' : 'text-red-800'
-                  } font-medium`}>
-                    {message.text}
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="group" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Which group are you part of?
-                  </label>
-                  <Input
-                    id="group"
-                    type="text"
-                    value={groupInput}
-                    onChange={(e) => setGroupInput(e.target.value)}
-                    placeholder="Enter your group name"
-                    className="w-full"
-                    onKeyPress={(e) => e.key === 'Enter' && authenticate()}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter any group name to continue
-                  </p>
-                </div>
-
-                <Button
-                  onClick={authenticate}
-                  className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Authenticate
-                </Button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Logout Button */}
-            <div className="flex justify-end mb-4">
-              <Button
-                onClick={logout}
-                variant="outline"
-                size="sm"
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <X className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-
-            {message && (
-              <Alert className={`mb-4 ${
-                message.type === 'success' 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-red-50 border-red-200'
-              }`}>
-                <AlertTriangle className={`w-5 h-5 ${
-                  message.type === 'success' ? 'text-green-600' : 'text-red-600'
-                }`} />
-                <AlertDescription className={`${
-                  message.type === 'success' ? 'text-green-800' : 'text-red-800'
-                } font-medium`}>
-                  {message.text}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Input Section */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
+        {/* Input Section */}
+        <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="flex gap-2">
               <div className="relative flex-1 search-container">
@@ -1115,8 +983,6 @@ export default function ValidationDashboard() {
               )}
             </div>
           </div>
-        )}
-          </>
         )}
       </div>
     </div>
