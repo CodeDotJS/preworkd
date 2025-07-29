@@ -234,15 +234,34 @@ export default function ValidationDashboard() {
           setResult(cachedJob.data)
           setIsFromCache(true)
           setCacheTimestamp(cachedJob.timestamp)
+          
+          // Auto-select first category with issues for cached results
+          if (cachedJob.data.result) {
+            const categoriesWithIssues = Object.entries(cachedJob.data.result).filter(([key, category]) => {
+              if (key === 'unique_sizes') {
+                return category && (category as any).total > 0
+              }
+              return category && category.total > 0
+            })
+            
+            if (categoriesWithIssues.length > 0) {
+              setSelectedCategory(categoriesWithIssues[0][0])
+            }
+          }
+          
           setLoading(false)
           return
         }
       }
       
-      // Get API endpoint from localStorage or use default
+      // Get API endpoint from localStorage or use environment variable
       const apiEndpoint = typeof window !== 'undefined' 
-        ? localStorage.getItem('apiEndpoint') || 'https://yaysay-validator-1.onrender.com/validate/'
-        : 'https://yaysay-validator-1.onrender.com/validate/'
+        ? localStorage.getItem('apiEndpoint') || process.env.NEXT_PUBLIC_DEFAULT_API_ENDPOINT
+        : process.env.NEXT_PUBLIC_DEFAULT_API_ENDPOINT
+      
+      if (!apiEndpoint) {
+        throw new Error('API endpoint not configured. Please set NEXT_PUBLIC_DEFAULT_API_ENDPOINT environment variable.')
+      }
       
       const response = await fetch(`/api/validate/${jobId}?endpoint=${encodeURIComponent(apiEndpoint)}`)
 
@@ -253,6 +272,20 @@ export default function ValidationDashboard() {
 
       const data: ApiResponse = await response.json()
       setResult(data)
+      
+      // Auto-select first category with issues
+      if (data.result) {
+        const categoriesWithIssues = Object.entries(data.result).filter(([key, category]) => {
+          if (key === 'unique_sizes') {
+            return category && (category as any).total > 0
+          }
+          return category && category.total > 0
+        })
+        
+        if (categoriesWithIssues.length > 0) {
+          setSelectedCategory(categoriesWithIssues[0][0])
+        }
+      }
       
       // Add to cache
       const domain = data.result ? getRepresentativeDomain(data.result) : 'UNKNOWN'
@@ -409,7 +442,8 @@ export default function ValidationDashboard() {
   }
 
   const handleCategoryClick = (categoryKey: string) => {
-    if (result?.result?.[categoryKey as keyof ValidationResult]?.total > 0) {
+    const category = result?.result?.[categoryKey as keyof ValidationResult]
+    if (category && 'total' in category && category.total > 0) {
       setSelectedCategory(categoryKey)
     }
   }
@@ -454,7 +488,7 @@ export default function ValidationDashboard() {
 
   // Helper function to get category data for display
   const getCategoryData = (categoryKey: string) => {
-    const category = result?.result?.[categoryKey as keyof ValidationResult]
+    const category = result?.result?.[categoryKey as keyof ValidationResult] || null
     if (!category) return null
 
     if (categoryKey === 'unique_sizes') {
@@ -501,7 +535,7 @@ export default function ValidationDashboard() {
                   placeholder="Enter job ID, paste URL, or type @ to search domains..."
                   value={input}
                   onChange={(e) => handleInputChange(e.target.value)}
-                  className="pl-10 h-10 text-sm bg-gray-50 border-gray-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg font-medium"
+                  className="pl-10 h-10 text-sm bg-gray-50 border-gray-200 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/20 rounded-lg font-medium"
                   disabled={loading}
                 />
                 
@@ -519,9 +553,6 @@ export default function ValidationDashboard() {
                           <div>
                             <p className="text-sm font-medium text-gray-900">
                               {extractDomainForSearch(entry.site)}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                              {entry.site}
                             </p>
                           </div>
                           <div className="text-xs text-gray-400 font-mono">
@@ -597,8 +628,13 @@ export default function ValidationDashboard() {
                   size="sm"
                   onClick={() => {
                     const reworkdBaseUrl = typeof window !== 'undefined' 
-                      ? localStorage.getItem('reworkdBaseUrl') || 'https://app.reworkd.ai/groups/949a6e3b-e9e9-4293-b42f-4b19a4f130a0/root/'
-                      : 'https://app.reworkd.ai/groups/949a6e3b-e9e9-4293-b42f-4b19a4f130a0/root/'
+                      ? localStorage.getItem('reworkdBaseUrl') || process.env.NEXT_PUBLIC_DEFAULT_REWORKD_BASE_URL
+                      : process.env.NEXT_PUBLIC_DEFAULT_REWORKD_BASE_URL
+                    
+                    if (!reworkdBaseUrl) {
+                      console.error('Reworkd base URL not configured. Please set NEXT_PUBLIC_DEFAULT_REWORKD_BASE_URL environment variable.')
+                      return
+                    }
                     
                     try {
                       const jobId = extractJobId(input)
@@ -618,8 +654,7 @@ export default function ValidationDashboard() {
             </div>
           </form>
         </div>
-
-        {/* Error Display - Fun Bruh Moment */}
+{/* Error Display - Fun Bruh Moment */}
         {error && (
           <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm text-center mb-6">
             <div className="max-w-md mx-auto">
