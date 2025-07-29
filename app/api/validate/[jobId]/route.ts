@@ -5,8 +5,12 @@ export async function GET(request: NextRequest, { params }: { params: { jobId: s
     const { jobId } = await params
     const { searchParams } = new URL(request.url)
     
-    // Get API endpoint from query parameter or use default
-    const apiEndpoint = searchParams.get('endpoint') || 'https://yaysay-validator.onrender.com/validate/'
+    // Get API endpoint from query parameter or use environment variable
+    const apiEndpoint = searchParams.get('endpoint') || process.env.NEXT_PUBLIC_DEFAULT_API_ENDPOINT
+    
+    if (!apiEndpoint) {
+      return NextResponse.json({ error: "API endpoint not configured" }, { status: 500 })
+    }
 
     // Validate job ID format (UUID)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
