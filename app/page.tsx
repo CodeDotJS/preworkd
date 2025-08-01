@@ -35,9 +35,20 @@ interface SizeValue {
   job_id: number
 }
 
+interface MissingImageValue {
+  url: string
+  product_id: string
+  image: string
+}
+
 interface UniqueSizesCategory {
   total: number
   values: SizeValue[]
+}
+
+interface MissingImagesCategory {
+  total: number
+  values: MissingImageValue[]
 }
 
 interface ValidationCategory {
@@ -58,6 +69,7 @@ interface ValidationResult {
   has_ratings_no_num_rating: ValidationCategory
   missing_price: ValidationCategory
   unique_sizes?: UniqueSizesCategory
+  missing_images_files?: MissingImagesCategory
 }
 
 interface ApiResponse {
@@ -90,6 +102,7 @@ const categoryLabels: Record<keyof ValidationResult, { title: string; icon: stri
   has_ratings_no_num_rating: { title: "Rating Without Count", icon: "📊" },
   missing_price: { title: "Missing Prices", icon: "💰" },
   unique_sizes: { title: "Unique Sizes", icon: "📏" },
+  missing_images_files: { title: "Missing Image Files", icon: "🖼️" },
 }
 
 // Cache management functions
@@ -425,6 +438,16 @@ export default function ValidationDashboard() {
             }
           }
         }
+      } else if (key === 'missing_images_files') {
+        // Handle missing_images_files category
+        const missingImagesCategory = category as MissingImagesCategory
+        if (missingImagesCategory.values && missingImagesCategory.values.length > 0) {
+          for (const value of missingImagesCategory.values) {
+            if (value.url) {
+              return extractDomain(value.url)
+            }
+          }
+        }
       } else {
         // Handle regular validation categories
         const validationCategory = category as ValidationCategory
@@ -501,6 +524,18 @@ export default function ValidationDashboard() {
           size: value.size,
           url: value.sample_url,
           jobId: value.job_id
+        }))
+      }
+    } else if (categoryKey === 'missing_images_files') {
+      const missingImagesCategory = category as MissingImagesCategory
+      return {
+        total: missingImagesCategory.total,
+        items: missingImagesCategory.values.map((value, index) => ({
+          id: `image-${index}`,
+          type: 'image' as const,
+          productId: value.product_id,
+          url: value.url,
+          image: value.image
         }))
       }
     } else {
@@ -873,8 +908,11 @@ export default function ValidationDashboard() {
                       <TableHeader className="sticky top-0 bg-white z-10">
                         <TableRow className="bg-gray-50 hover:bg-gray-50">
                           <TableHead className="font-bold text-gray-700 py-4">
-                            {selectedCategory === 'unique_sizes' ? 'Size' : 'Product ID'}
+                            {selectedCategory === 'unique_sizes' ? 'Size' : selectedCategory === 'missing_images_files' ? 'Product ID' : 'Product ID'}
                           </TableHead>
+                          {selectedCategory === 'missing_images_files' && (
+                            <TableHead className="font-bold text-gray-700 py-4">Missing Image</TableHead>
+                          )}
                           <TableHead className="font-bold text-gray-700 py-4">URL</TableHead>
                           <TableHead className="font-bold text-gray-700 py-4 w-24">Actions</TableHead>
                         </TableRow>
@@ -913,6 +951,21 @@ export default function ValidationDashboard() {
                                   </code>
                                 )}
                               </TableCell>
+                              {selectedCategory === 'missing_images_files' && item.type === 'image' && (
+                                <TableCell className="py-4">
+                                  <code 
+                                    onClick={() => copyToClipboard(item.image, `image-${selectedCategory}-${index}`)}
+                                    className={`px-3 py-2 rounded-xl text-sm font-inconsolata font-semibold border cursor-pointer transition-colors whitespace-nowrap ${
+                                      copiedItems.has(`image-${selectedCategory}-${index}`) 
+                                        ? "bg-teal-100 text-teal-800 border-teal-200" 
+                                        : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+                                    }`}
+                                    title={item.image}
+                                  >
+                                    {item.image}
+                                  </code>
+                                </TableCell>
+                              )}
                               <TableCell className="py-4">
                                 <div className="flex items-center gap-3">
                                   <div className="flex-1 min-w-0">
@@ -964,7 +1017,7 @@ export default function ValidationDashboard() {
                     return categoryData && categoryData.items.length > 50 ? (
                       <div className="p-4 bg-gray-50 text-center border-t border-gray-200">
                         <span className="text-sm font-semibold text-gray-600">
-                          Showing 50 of {categoryData.total} {selectedCategory === 'unique_sizes' ? 'sizes' : 'issues'}
+                          Showing 50 of {categoryData.total} {selectedCategory === 'unique_sizes' ? 'sizes' : selectedCategory === 'missing_images_files' ? 'missing images' : 'issues'}
                         </span>
                       </div>
                     ) : null
