@@ -27,18 +27,21 @@ interface ValidationExample {
   __url?: string
   product_id: string
   job_id?: number
+  job_url?: string
 }
 
 interface SizeValue {
   size: string
   sample_url: string
   job_id: number
+  job_url?: string
 }
 
 interface MissingImageValue {
   url: string
   product_id: string
   image: string
+  job_url?: string
 }
 
 interface UniqueSizesCategory {
@@ -523,7 +526,8 @@ export default function ValidationDashboard() {
           type: 'size' as const,
           size: value.size,
           url: value.sample_url,
-          jobId: value.job_id
+          jobId: value.job_id,
+          jobUrl: value.job_url
         }))
       }
     } else if (categoryKey === 'missing_images_files') {
@@ -535,7 +539,8 @@ export default function ValidationDashboard() {
           type: 'image' as const,
           productId: value.product_id,
           url: value.url,
-          image: value.image
+          image: value.image,
+          jobUrl: value.job_url
         }))
       }
     } else {
@@ -547,7 +552,8 @@ export default function ValidationDashboard() {
           type: 'example' as const,
           productId: example.product_id,
           url: getExampleUrl(example),
-          jobId: example.job_id
+          jobId: example.job_id,
+          jobUrl: example.job_url
         }))
       }
     }
@@ -914,7 +920,7 @@ export default function ValidationDashboard() {
                             <TableHead className="font-bold text-gray-700 py-4">Missing Image</TableHead>
                           )}
                           <TableHead className="font-bold text-gray-700 py-4">URL</TableHead>
-                          <TableHead className="font-bold text-gray-700 py-4 w-24">Actions</TableHead>
+                          <TableHead className="font-bold text-gray-700 py-4">Job</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -969,9 +975,20 @@ export default function ValidationDashboard() {
                               <TableCell className="py-4">
                                 <div className="flex items-center gap-3">
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-700 break-all leading-relaxed font-medium">
-                                      {item.url || "No URL available"}
-                                    </p>
+                                    {item.url ? (
+                                      <a 
+                                        href={item.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-sm text-gray-700 break-all leading-relaxed font-medium hover:underline transition-colors"
+                                      >
+                                        {item.url}
+                                      </a>
+                                    ) : (
+                                      <p className="text-sm text-gray-700 break-all leading-relaxed font-medium">
+                                        No URL available
+                                      </p>
+                                    )}
                                   </div>
                                   {item.url && (
                                     <Button
@@ -991,7 +1008,7 @@ export default function ValidationDashboard() {
                                 </div>
                               </TableCell>
                               <TableCell className="py-4">
-                                {item.url && (
+                                {item.jobUrl && (
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -999,7 +1016,7 @@ export default function ValidationDashboard() {
                                     asChild
                                     className="h-8 w-8 p-0 hover:bg-violet-100 rounded-xl transition-colors"
                                   >
-                                    <a href={item.url} target="_blank" rel="noopener noreferrer">
+                                    <a href={item.jobUrl} target="_blank" rel="noopener noreferrer">
                                       <ExternalLink className="w-4 h-4 text-violet-600" />
                                     </a>
                                   </Button>
