@@ -44,6 +44,22 @@ interface MissingImageValue {
   job_url?: string
 }
 
+interface SmallFileValue {
+  url: string
+  product_id: string
+  file_size: string
+  job_id: number
+  job_url?: string
+}
+
+interface MissingMetadataValue {
+  url: string
+  product_id: string
+  file_metadata: Record<string, any>
+  job_id: number
+  job_url?: string
+}
+
 interface UniqueSizesCategory {
   total: number
   values: SizeValue[]
@@ -52,6 +68,16 @@ interface UniqueSizesCategory {
 interface MissingImagesCategory {
   total: number
   values: MissingImageValue[]
+}
+
+interface SmallFilesCategory {
+  total: number
+  values: SmallFileValue[]
+}
+
+interface MissingMetadataCategory {
+  total: number
+  values: MissingMetadataValue[]
 }
 
 interface ValidationCategory {
@@ -73,6 +99,8 @@ interface ValidationResult {
   missing_price: ValidationCategory
   unique_sizes?: UniqueSizesCategory
   missing_images_files?: MissingImagesCategory
+  small_files_size?: SmallFilesCategory
+  missing_metadata_files?: MissingMetadataCategory
 }
 
 interface ApiResponse {
@@ -106,6 +134,8 @@ const categoryLabels: Record<keyof ValidationResult, { title: string; icon: stri
   missing_price: { title: "Missing Prices", icon: "💰" },
   unique_sizes: { title: "Unique Sizes", icon: "📏" },
   missing_images_files: { title: "Missing Image Files", icon: "🖼️" },
+  small_files_size: { title: "Small File Sizes", icon: "📦" },
+  missing_metadata_files: { title: "Missing Metadata Files", icon: "📋" },
 }
 
 // Cache management functions
@@ -451,6 +481,26 @@ export default function ValidationDashboard() {
             }
           }
         }
+      } else if (key === 'small_files_size') {
+        // Handle small_files_size category
+        const smallFilesCategory = category as SmallFilesCategory
+        if (smallFilesCategory.values && smallFilesCategory.values.length > 0) {
+          for (const value of smallFilesCategory.values) {
+            if (value.url) {
+              return extractDomain(value.url)
+            }
+          }
+        }
+      } else if (key === 'missing_metadata_files') {
+        // Handle missing_metadata_files category
+        const missingMetadataCategory = category as MissingMetadataCategory
+        if (missingMetadataCategory.values && missingMetadataCategory.values.length > 0) {
+          for (const value of missingMetadataCategory.values) {
+            if (value.url) {
+              return extractDomain(value.url)
+            }
+          }
+        }
       } else {
         // Handle regular validation categories
         const validationCategory = category as ValidationCategory
@@ -540,6 +590,34 @@ export default function ValidationDashboard() {
           productId: value.product_id,
           url: value.url,
           image: value.image,
+          jobUrl: value.job_url
+        }))
+      }
+    } else if (categoryKey === 'small_files_size') {
+      const smallFilesCategory = category as SmallFilesCategory
+      return {
+        total: smallFilesCategory.total,
+        items: smallFilesCategory.values.map((value, index) => ({
+          id: `file-${index}`,
+          type: 'file' as const,
+          productId: value.product_id,
+          url: value.url,
+          fileSize: value.file_size,
+          jobId: value.job_id,
+          jobUrl: value.job_url
+        }))
+      }
+    } else if (categoryKey === 'missing_metadata_files') {
+      const missingMetadataCategory = category as MissingMetadataCategory
+      return {
+        total: missingMetadataCategory.total,
+        items: missingMetadataCategory.values.map((value, index) => ({
+          id: `metadata-${index}`,
+          type: 'metadata' as const,
+          productId: value.product_id,
+          url: value.url,
+          fileMetadata: value.file_metadata,
+          jobId: value.job_id,
           jobUrl: value.job_url
         }))
       }
@@ -919,6 +997,12 @@ export default function ValidationDashboard() {
                           {selectedCategory === 'missing_images_files' && (
                             <TableHead className="font-bold text-gray-700 py-4">Missing Image</TableHead>
                           )}
+                          {selectedCategory === 'small_files_size' && (
+                            <TableHead className="font-bold text-gray-700 py-4">File Size</TableHead>
+                          )}
+                          {selectedCategory === 'missing_metadata_files' && (
+                            <TableHead className="font-bold text-gray-700 py-4">Metadata</TableHead>
+                          )}
                           <TableHead className="font-bold text-gray-700 py-4">URL</TableHead>
                           <TableHead className="font-bold text-gray-700 py-4">Job</TableHead>
                         </TableRow>
@@ -928,7 +1012,7 @@ export default function ValidationDashboard() {
                           const categoryData = getCategoryData(selectedCategory)
                           if (!categoryData) return null
 
-                          return categoryData.items.slice(0, 50).map((item, index) => (
+                          return categoryData.items.map((item, index) => (
                             <TableRow key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
                               <TableCell className="py-4">
                                 {item.type === 'size' ? (
@@ -969,6 +1053,36 @@ export default function ValidationDashboard() {
                                     title={item.image}
                                   >
                                     {item.image}
+                                  </code>
+                                </TableCell>
+                              )}
+                              {selectedCategory === 'small_files_size' && item.type === 'file' && (
+                                <TableCell className="py-4">
+                                  <code 
+                                    onClick={() => copyToClipboard(item.fileSize, `filesize-${selectedCategory}-${index}`)}
+                                    className={`px-3 py-2 rounded-xl text-sm font-inconsolata font-semibold border cursor-pointer transition-colors whitespace-nowrap ${
+                                      copiedItems.has(`filesize-${selectedCategory}-${index}`) 
+                                        ? "bg-teal-100 text-teal-800 border-teal-200" 
+                                        : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+                                    }`}
+                                    title={item.fileSize}
+                                  >
+                                    {item.fileSize}
+                                  </code>
+                                </TableCell>
+                              )}
+                              {selectedCategory === 'missing_metadata_files' && item.type === 'metadata' && (
+                                <TableCell className="py-4">
+                                  <code 
+                                    onClick={() => copyToClipboard(JSON.stringify(item.fileMetadata), `metadata-${selectedCategory}-${index}`)}
+                                    className={`px-3 py-2 rounded-xl text-sm font-inconsolata font-semibold border cursor-pointer transition-colors whitespace-nowrap ${
+                                      copiedItems.has(`metadata-${selectedCategory}-${index}`) 
+                                        ? "bg-teal-100 text-teal-800 border-teal-200" 
+                                        : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+                                    }`}
+                                    title={JSON.stringify(item.fileMetadata)}
+                                  >
+                                    {Object.keys(item.fileMetadata).length === 0 ? 'Empty' : `${Object.keys(item.fileMetadata).length} keys`}
                                   </code>
                                 </TableCell>
                               )}
@@ -1029,16 +1143,7 @@ export default function ValidationDashboard() {
                     </Table>
                   </div>
 
-                  {(() => {
-                    const categoryData = getCategoryData(selectedCategory)
-                    return categoryData && categoryData.items.length > 50 ? (
-                      <div className="p-4 bg-gray-50 text-center border-t border-gray-200">
-                        <span className="text-sm font-semibold text-gray-600">
-                          Showing 50 of {categoryData.total} {selectedCategory === 'unique_sizes' ? 'sizes' : selectedCategory === 'missing_images_files' ? 'missing images' : 'issues'}
-                        </span>
-                      </div>
-                    ) : null
-                  })()}
+
                 </div>
               ) : (
                 <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm text-center">
