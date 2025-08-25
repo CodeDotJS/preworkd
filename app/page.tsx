@@ -208,6 +208,24 @@ export default function ValidationDashboard() {
   const [searchResults, setSearchResults] = useState<JobEntry[]>([])
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
+  const [variantDialogOpen, setVariantDialogOpen] = useState(false)
+  const [variantDialogData, setVariantDialogData] = useState<{ color: string; reason: string; variants: { name?: string; url?: string }[]; url?: string | null; jobUrl?: string } | null>(null)
+
+  const openVariantDialog = (item: any) => {
+    setVariantDialogData({
+      color: item.color || '',
+      reason: item.reason || '',
+      variants: Array.isArray(item.variants) ? item.variants : [],
+      url: item.url || null,
+      jobUrl: item.jobUrl,
+    })
+    setVariantDialogOpen(true)
+  }
+  const closeVariantDialog = () => {
+    setVariantDialogOpen(false)
+    setVariantDialogData(null)
+  }
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -571,7 +589,7 @@ export default function ValidationDashboard() {
       const uniqueSizesCategory = category as UniqueSizesCategory
       return {
         total: uniqueSizesCategory.total,
-        items: uniqueSizesCategory.values.map((value, index) => ({
+        items: (uniqueSizesCategory.values || []).map((value, index) => ({
           id: `size-${index}`,
           type: 'size' as const,
           size: value.size,
@@ -584,7 +602,7 @@ export default function ValidationDashboard() {
       const missingImagesCategory = category as MissingImagesCategory
       return {
         total: missingImagesCategory.total,
-        items: missingImagesCategory.values.map((value, index) => ({
+        items: (missingImagesCategory.values || []).map((value, index) => ({
           id: `image-${index}`,
           type: 'image' as const,
           productId: value.product_id,
@@ -597,7 +615,7 @@ export default function ValidationDashboard() {
       const smallFilesCategory = category as SmallFilesCategory
       return {
         total: smallFilesCategory.total,
-        items: smallFilesCategory.values.map((value, index) => ({
+        items: (smallFilesCategory.values || []).map((value, index) => ({
           id: `file-${index}`,
           type: 'file' as const,
           productId: value.product_id,
@@ -611,7 +629,7 @@ export default function ValidationDashboard() {
       const missingMetadataCategory = category as MissingMetadataCategory
       return {
         total: missingMetadataCategory.total,
-        items: missingMetadataCategory.values.map((value, index) => ({
+        items: (missingMetadataCategory.values || []).map((value, index) => ({
           id: `metadata-${index}`,
           type: 'metadata' as const,
           productId: value.product_id,
@@ -623,16 +641,35 @@ export default function ValidationDashboard() {
       }
     } else {
       const validationCategory = category as ValidationCategory
-      return {
-        total: validationCategory.total,
-        items: validationCategory.examples.map((example, index) => ({
-          id: `example-${index}`,
-          type: 'example' as const,
-          productId: example.product_id,
-          url: getExampleUrl(example),
-          jobId: example.job_id,
-          jobUrl: example.job_url
-        }))
+      if (categoryKey === 'variant_consistency') {
+        return {
+          total: validationCategory.total,
+          items: (validationCategory.examples || []).map((example, index) => {
+            const anyEx = example as any
+            return {
+              id: `variant-${index}`,
+              type: 'variant_consistency' as const,
+              url: getExampleUrl(example),
+              jobId: example.job_id,
+              jobUrl: example.job_url,
+              reason: anyEx?.reason || '',
+              color: anyEx?.color || anyEx?.name || '',
+              variants: Array.isArray(anyEx?.variants) ? anyEx.variants : [],
+            }
+          })
+        }
+      } else {
+        return {
+          total: validationCategory.total,
+          items: (validationCategory.examples || []).map((example, index) => ({
+            id: `example-${index}`,
+            type: 'example' as const,
+            productId: example.product_id,
+            url: getExampleUrl(example),
+            jobId: example.job_id,
+            jobUrl: example.job_url
+          }))
+        }
       }
     }
   }
@@ -992,7 +1029,7 @@ export default function ValidationDashboard() {
                       <TableHeader className="sticky top-0 bg-white z-10">
                         <TableRow className="bg-gray-50 hover:bg-gray-50">
                           <TableHead className="font-bold text-gray-700 py-4">
-                            {selectedCategory === 'unique_sizes' ? 'Size' : selectedCategory === 'missing_images_files' ? 'Product ID' : 'Product ID'}
+                            {selectedCategory === 'unique_sizes' ? 'Size' : selectedCategory === 'variant_consistency' ? 'Color/Name' : 'Product ID'}
                           </TableHead>
                           {selectedCategory === 'missing_images_files' && (
                             <TableHead className="font-bold text-gray-700 py-4">Missing Image</TableHead>
@@ -1004,6 +1041,9 @@ export default function ValidationDashboard() {
                             <TableHead className="font-bold text-gray-700 py-4">Metadata</TableHead>
                           )}
                           <TableHead className="font-bold text-gray-700 py-4">URL</TableHead>
+                          {selectedCategory === 'variant_consistency' && (
+                            <TableHead className="font-bold text-gray-700 py-4">Reason</TableHead>
+                          )}
                           <TableHead className="font-bold text-gray-700 py-4">Job</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1027,17 +1067,30 @@ export default function ValidationDashboard() {
                                   >
                                     {item.size}
                                   </code>
+                                ) : item.type === 'variant_consistency' ? (
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => openVariantDialog(item)}
+                                      className="h-8 px-2 text-xs"
+                                    >
+                                      View
+                                    </Button>
+                                    <span className="text-sm font-medium text-gray-800 truncate max-w-[220px]" title={item.color || ''}>{item.color || '—'}</span>
+                                  </div>
                                 ) : (
                                   <code 
-                                    onClick={() => copyToClipboard(item.productId, `id-${selectedCategory}-${index}`)}
+                                    onClick={() => item.productId && copyToClipboard(item.productId, `id-${selectedCategory}-${index}`)}
                                     className={`px-3 py-2 rounded-xl text-sm font-inconsolata font-semibold border cursor-pointer transition-colors whitespace-nowrap ${
                                       copiedItems.has(`id-${selectedCategory}-${index}`) 
                                         ? "bg-teal-100 text-teal-800 border-teal-200" 
                                         : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
                                     }`}
-                                    title={item.productId}
+                                    title={item.productId || ''}
                                   >
-                                    {item.productId.length > 25 ? `${item.productId.substring(0, 25)}...` : item.productId}
+                                    {item.productId ? (item.productId.length > 25 ? `${item.productId.substring(0, 25)}...` : item.productId) : '—'}
                                   </code>
                                 )}
                               </TableCell>
@@ -1121,6 +1174,11 @@ export default function ValidationDashboard() {
                                   )}
                                 </div>
                               </TableCell>
+                              {selectedCategory === 'variant_consistency' && (
+                                <TableCell className="py-4">
+                                  <span className="text-sm text-gray-700">{(item as any).reason || '—'}</span>
+                                </TableCell>
+                              )}
                               <TableCell className="py-4">
                                 {item.jobUrl && (
                                   <Button
@@ -1136,12 +1194,74 @@ export default function ValidationDashboard() {
                                   </Button>
                                 )}
                               </TableCell>
+                              {/* modal handles details now */}
                             </TableRow>
                           ))
                         })()}
                       </TableBody>
                     </Table>
                   </div>
+
+                  {/* Variant Consistency Modal */}
+                  {variantDialogOpen && variantDialogData && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/30" onClick={closeVariantDialog} />
+                      <div className="relative z-10 w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-gray-200">
+                        <div className="p-5 border-b border-gray-200 flex items-center justify-between">
+                          <div>
+                            <h4 className="text-lg font-bold text-gray-900">Variant Details</h4>
+                            <p className="text-sm text-gray-600">{variantDialogData.color || '—'}</p>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={closeVariantDialog} className="h-8 w-8 p-0 hover:bg-gray-100 rounded-xl">✕</Button>
+                        </div>
+                        <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                          {variantDialogData.url && (
+                            <div className="text-sm">
+                              <span className="font-semibold text-gray-700 mr-2">Parent URL:</span>
+                              <a href={variantDialogData.url} target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:underline break-all">
+                                {variantDialogData.url}
+                              </a>
+                            </div>
+                          )}
+                          {variantDialogData.reason && (
+                            <div className="text-sm text-gray-700">
+                              <span className="font-semibold mr-2">Reason:</span>{variantDialogData.reason}
+                            </div>
+                          )}
+                          <div>
+                            <h5 className="text-sm font-semibold text-gray-800 mb-2">Variants</h5>
+                            <div className="space-y-2">
+                              {variantDialogData.variants.length > 0 ? (
+                                variantDialogData.variants.map((v, idx) => (
+                                  <div key={`v-${idx}`} className="flex items-center justify-between text-sm px-3 py-2 rounded-lg border border-gray-200 bg-gray-50">
+                                    <span className="font-medium text-gray-900 truncate max-w-[70%]" title={v.name || ''}>{v.name || '—'}</span>
+                                    {v.url ? (
+                                      <a href={v.url} target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:underline">Open</a>
+                                    ) : (
+                                      <span className="text-gray-400">No URL</span>
+                                    )}
+                                  </div>
+                                ))
+                              ) : (
+                                <span className="text-sm text-gray-500">No variants</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 border-t border-gray-200 flex items-center justify-end gap-2">
+                          {variantDialogData.jobUrl && (
+                            <Button variant="outline" size="sm" asChild className="gap-1">
+                              <a href={variantDialogData.jobUrl} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="w-4 h-4" />
+                                Open Job
+                              </a>
+                            </Button>
+                          )}
+                          <Button variant="outline" size="sm" onClick={closeVariantDialog}>Close</Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
 
                 </div>
